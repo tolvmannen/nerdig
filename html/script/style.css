@@ -1,0 +1,208 @@
+
+:root {
+	--bg-color: #FFF;
+	--text-color: #AAA;
+	--section-color: #ffffff;
+	--accent-color: #cccccc;
+	--navbar-bg-color: #fff;
+	--navbar-text-color: #111;
+	--navbar-accent-color: #cccccc;
+	--navbar-height: 4rem;
+}
+
+*{
+	margin: 0;
+	padding: 0;
+} 
+
+html {
+	font-size: clamp(14px, 1rem, 2rem);
+	font-family: Verdana, sans-serif;
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+        justify-content: start;
+	background-color: var(--bg-color);
+	color: var(--text-color);
+	font-size: 1rem;
+	height: 100vh;
+}
+
+body:has(#hide_unset:checked) * .unset {
+	display: none;
+} 
+
+section {
+	display: flex;
+	flex-direction: row;
+	flex-grow: 1;
+	gap: 1rem;
+	width: clamp(450px, 92vw, 1500px);
+	flex-grow: 1;
+	background-color: var(--section-color);	
+	position: relative;
+	z-index: 1;
+}
+
+/*[class^="info-"]:hover { */
+.info:hover {
+	font-weight: bold;
+	cursor: pointer;
+	/*cursor: help;*/
+}
+
+.unset {
+	color: #555;
+} 
+
+.header {
+	flex-wrap: wrap;
+	flex-grow: 0;
+	background-color: #666;
+}
+
+.banner {
+	display: flex;
+	align-items: center;
+	justify-content: center;	
+	height: 5rem;
+	width: 100%;
+	background-color: #999;
+}
+
+.fulllwidth {
+	width: 100%;
+}
+
+label {
+	margin: 0.2rem;
+	cursor: pointer;
+}
+
+.sendflag { 
+	text-decoration: line-through;
+	color: #CCC;
+}
+
+input[type=checkbox] {
+	display: none;
+}
+
+input[type=checkbox]:checked + span label {
+	text-decoration: none;
+	color: #000;
+}
+
+.digform {
+	display: flex;
+	flex-direction: row;
+	padding: 0.1rem;
+}
+
+.options,
+.mainquery {
+	display: flex;
+	padding: 0.2rem;
+}
+
+.main {
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+	flex-grow: 1;
+}
+
+.footer {
+	height: 4rem;
+	background-color: #999;
+	flex-grow: 0;
+} 
+
+.infotag {
+	margin-right: 0.8rem; 
+	margin-bottom: 2px;
+}
+
+.digbox {
+	display: flex;
+	flex-direction: row;
+	flex-grow: 1;
+	padding: 10px;
+	font-size: 0.8rem;
+    	font-family: monospace, monospace;
+    	color: #CCC;
+    	background-color: #000;
+	border-radius: 20px;
+}
+
+#infobox { 
+	display: flex;
+	flex-direction: row;
+	/*
+	width: clamp(250px, 30%, 40%);
+	width: max(600px,40%);
+	width: 40%;
+	*/
+	width: min(600px,40%);
+	padding: 10px;
+	/*
+	font-size: 0.5em;
+    	font-family: monospace, monospace;
+	*/
+    	color: #EEE;
+    	background-color: #555;
+	border-radius: 20px;
+}
+
+
+.sepcolon {
+	margin-left: -0.4rem;
+}
+
+/* table replacement */
+
+#terminal {
+	display: grid;
+	grid-template-columns: repeat(4,1fr);
+	align-items: start;
+	align-content: start;
+	gap: 0.3rem 0.8rem;
+	
+
+}
+
+#terminal > div {
+	display: grid;
+	overflow-wrap: break-word;
+	width: min(min-content(), 400px);
+}
+
+#terminal > .digheader {
+	grid-column: 1 / column-end;
+	margin-top: 0.8rem;
+}
+
+#terminal > .rdata {
+	word-break: break-all;
+}
+
+@media (width < 1020px) {
+
+	section {
+		width: clamp(380px, 92vw, 900px);
+	}
+	.main {
+		flex-wrap: wrap;
+	}
+
+	#terminal, #infobox {
+		width: 100%;
+	}
+
+	#terminal > div {
+		width: min(min-content(), 380px);
+	}
+
+}

@@ -1,0 +1,20 @@
+TLS: none           # auto | local | none
+Address: ""         # empty string binds to all available ip-addresses.
+Port: "5555"
+Certfile: ""        # Only used with TLS: local 
+Keyfile: ""         # Only used with TLS: local
+AllowOrigins:       # "*" = allow all origins
+    - "*"
+AllowMethods:
+    - GET
+    - POST
+    - OPTIONS
+AllowHeaders:       # Example icludes headers nedded for the current HTMX usage
+    - Origin
+    - hx-target
+    - hx-current-url
+    - hx-request
+    - content-type
+ExposeHeaders:
+    - Content-Length
+AllowCredentials: true

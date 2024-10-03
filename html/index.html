@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <title>works!</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="script/style.css">
+	<!--
+        <script src="https://unpkg.com/htmx.org@1.7.1/dist/htmx.min.js"></script>
+        <script src="https://unpkg.com/htmx.org@1.7.1/dist/ext/json-enc.js"></script>
+	-->
+        <script src="script/1.9.9.htmx.min.js"></script>
+        <script src="script/1.9.9.json-enc.js"></script>
+</head>
+<body>
+
+<input type="checkbox" id="hide_unset" value="true" name="hide_unset" checked> 
+
+<section class="header">
+
+    <div class="banner">
+        <h1>NERDIG banner placeholder</h1>
+    </div>
+
+    <div class="digform">
+                <!-- <form hx-post="https://ardeth.tolvmannen.se:5555/dig/webclient"> -->
+                <form hx-post="dig/webclient"
+                hx-target="#terminal" 
+                hx-swap="innerHTML" 
+                hx-headers='{"Content-Type": "application/json"}' 
+                hx-on:htmx:response-error="alert('ERROR: Request could not be completed')"
+                hx-on:htmx:send-error="alert('ERROR: Could not send request')"
+                hx-ext="json-enc">
+
+        <div class="mainquery">
+
+            <input type="text" id="Qname" name="Qname" placeholder="query name" required>
+
+            <select id="Qtype" name="Qtype" required>
+                <option value="A">A</option>
+                <option value="AAAA">AAAA</option>
+                <option value="NS">NS</option>
+                <option value="MX">MX</option>
+                <option value="TXT">TXT</option>
+                <option value="SOA">SOA</option>
+                <option value="PTR">PTR</option>
+                <option value="CNAME">CNAME</option>
+                <option value="SRV">SRV</option>
+                <option disabled>──────────</option>
+                <option value="NSEC">NSEC</option>
+                <option value="RRSIG">RRSIG</option>
+                <option value="DNSKEY">DNSKEY</option>
+                <option value="CDNSKEY">CDNSKEY</option>
+                <option value="DS">DS</option>
+                <option value="CDS">CDS</option>
+                <option value="NSEC3PARAM">NSEC3PARAM</option>
+                <option value="RP">RP</option>
+                <!-- Add more options as needed -->
+            </select>
+
+            <input type="text" id="Nameserver" name="Nameserver" value="1.1.1.1" required>
+            <button type="submit">DIG</button>
+
+        </div>
+        <div class="options">
+            <span class="infotag"> 
+                    Flags <sup>&#9432;</sup> 
+            </span>
+
+            <input type="checkbox" id="RD" value="true" name="RD" checked> 
+            <span>
+            <label class="sendflag" for="RD">RD</label>
+            </span>
+
+            <input type="checkbox" id="AA" value="true" name="AA"> 
+            <span>
+            <label class="sendflag" for="AA">AA</label>
+            </span>
+
+            <input type="checkbox" id="AD" value="true" name="AD"> 
+            <span>
+            <label class="sendflag" for="AD">AD</label>
+            </span>
+
+            <input type="checkbox" id="CD" value="true" name="CD"> 
+            <span>
+            <label class="sendflag" for="CD">CD</label>
+            </span>
+            
+            <input type="checkbox" id="DO" value="true" name="DO"> 
+            <span>
+            <label class="sendflag" for="DO">DO</label>
+            </span>
+
+            <input type="checkbox" id="NoCrypto" value="true" name="NoCrypto"> 
+            <span>
+            <label class="sendflag" for="NoCrypto">No Crypto</label>
+            </span>
+
+            <input type="checkbox" id="Nsid" value="true" name="Nsid"> 
+            <span>
+            <label class="sendflag" for="Nsid">Nsid</label>
+            </span>
+            <select id="Transport" name="Transport" required>
+                <option value="udp">UDP</option>
+                <option value="tcp">TCP</option>
+            </select>
+            <select id="IpVersion" name="IpVersion" required>
+                <option value="4">IPv4</option>
+                <option value="6">IPv6</option>
+            </select>
+            </span>
+        </div>
+
+        <div class="options">
+            <br />
+            <span>
+            <details>
+                <summary>Extra Options</summary>
+                <input type="text" id="Port" name="Port" value="53" required>
+                <input type="text" id="UDPsize" name="UDPsize" value="1232" required>
+            </details>
+            </span>
+        </div>
+
+<!--
+        <input type="hidden" id="Nsid" name="Nsid" value="false">
+        <input type="hidden" id="Nameserver" name="Nameserver" value="1.1.1.1">
+        <input type="hidden" id="Transport" name="Transport" value="udp">
+        <input type="hidden" id="Port" name="Port" value="53">
+        <input type="hidden" id="IpVersion" name="IpVersion" value="4">
+-->
+
+        </form>
+    </div>
+</section>
+<section class="main">
+
+ 
+	<div class="digbox">
+	<div id="terminal">
+
+	dig% >
+
+	<!--
+	<div class="digheader">;; opcode: QUERY, status: NOERROR, id: 59447</div>
+	
+	<div>iis.se.</div>
+	<div>3476</div>
+	<div>IN</div>
+	<div>A</div>
+	<div>159.253.30.207</div>
+
+	<div>iis.se.</div>
+	<div>3476</div>
+	<div>IN</div>
+	<div>RRSIG</div>
+	<div class="rdata">A 13 2 3600 20240920071025 20240816054025 24605 iis.se. pUrDhfC5phC5iq1f6ubOLxpVhOJy8m1sJ1AamC6+CGsBBfxyNcSgyw9VpnvClt4+F4/MonSVEQBhajqGeoe6tg==</div>
+	-->
+
+
+
+	</div>
+ 	</div>
+ 	<div id="infobox"> 
+                    Info about flags, sections and other stuff
+ 	</div>
+
+</section>
+<section class="footer"> 
+    
+    <span>
+    <label for="hide_unset"><img src="tt.png" width="50" height="50"/> </label>
+    </span>
+</section>
+
+</body>
+</html>
+
+<!--
+<span class=""
+	ws += "hx-get='" + hxget + rfield + "' "
+	ws += "hx-target='#infobox' "
+	ws += "hx-swap='innerHTML' "
+-->
