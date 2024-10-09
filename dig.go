@@ -1,7 +1,8 @@
 package main
 
 import (
-	//"fmt"
+	"fmt"
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -13,7 +14,7 @@ func dig(query Query) DigOut {
 
 	// Just to be safe, we sanitize data close to usage
 	query.Sanitize()
-	//fmt.Printf("\n%+v\n", query)
+
 	message := &dns.Msg{
 		MsgHdr: dns.MsgHdr{
 			Authoritative:     query.AA,
@@ -62,7 +63,17 @@ func dig(query Query) DigOut {
 	}
 	message.Extra = append(message.Extra, o)
 
-	QNS := query.Nameserver // Preserve name server name to use in output
+	// What are we sending...
+	//sendheader := ";; " + htmxwrap(message.String(), "span", "sendheader", []string{il})
+	//fmt.Printf("SENDING: %+v\n", message)
+	sendheader := "placeholder"
+	fmt.Printf("%T \n %#v", message, message)
+
+	// Preserve name server name to use in output. Blank = system resolver
+	QNS := "System Resolver"
+	if len(query.Nameserver) > 1 {
+		QNS = query.Nameserver
+	}
 	nameserver := query.GetLookupNS()
 
 	// Set correct transport protocol (udp, udp4, udp6, tcp, tcp4, tcp6)
@@ -74,6 +85,18 @@ func dig(query Query) DigOut {
 	client.DialTimeout = 2 * time.Second
 	client.ReadTimeout = 2 * time.Second
 	client.WriteTimeout = 2 * time.Second
+
+	if query.Tsig != "" {
+		if algo, name, secret, ok := tsigKeyParse(query.Tsig); ok {
+			message.SetTsig(name, algo, 300, time.Now().Unix())
+			client.TsigSecret = map[string]string{name: secret}
+			//transport.TsigSecret = map[string]string{name: secret}
+		} else {
+			log.Print("TSIG key data error\n")
+		}
+	}
+
+	//t := new(dns.Transfer)
 
 	response, rtt, err := client.Exchange(message, nameserver)
 
@@ -89,6 +112,7 @@ func dig(query Query) DigOut {
 		RTT:        rtt, // Note to self: rtt is in nanoseconds (1M ns = 1 millisecond)
 		Nameserver: nameserver,
 		QNSname:    QNS,
+		SendHeader: sendheader,
 		MsgSize:    msgSize,
 		Transport:  query.Transport,
 	}
@@ -145,4 +169,22 @@ func TypeToInt(t string) uint16 {
 		}
 	}
 	return ti
+}
+
+func tsigKeyParse(s string) (algo, name, secret string, ok bool) {
+	s1 := strings.SplitN(s, ":", 3)
+	switch len(s1) {
+	case 2:
+		return "hmac-md5.sig-alg.reg.int.", dns.Fqdn(s1[0]), s1[1], true
+	case 3:
+		switch s1[0] {
+		case "hmac-md5":
+			return "hmac-md5.sig-alg.reg.int.", dns.Fqdn(s1[1]), s1[2], true
+		case "hmac-sha1":
+			return "hmac-sha1.", dns.Fqdn(s1[1]), s1[2], true
+		case "hmac-sha256":
+			return "hmac-sha256.", dns.Fqdn(s1[1]), s1[2], true
+		}
+	}
+	return
 }

@@ -25,97 +25,10 @@ const (
 )
 
 func (r *DigOut) ToHTML() string {
-	//respstring := fmt.Sprintf("%#v", r.Response)
-	//fmt.Printf("Extra \n%#v\n", r.Response.Extra)
-	//ans := r.Response.Answer
-	//fmt.Printf("%#v", ans)
-	//fmt.Printf("Is AA? %#v", r.Response.Authoritative)
-
-	//nocryptoMsg(r.Response)
-
-	// strconv.FormatUint(uint64(n), 10)
-	opcode := dns.OpcodeToString[r.Response.Opcode]
-	rcode := dns.RcodeToString[r.Response.Rcode]
-	id := strconv.Itoa(int(r.Response.Id))
-
-	setflag := map[string]string{
-		"QR": "unset",
-		"RD": "unset",
-		"RA": "unset",
-		"AA": "unset",
-		"AD": "unset",
-		"CD": "unset",
-		"TC": "unset",
-	}
-
-	if r.Response.Response {
-		setflag["QR"] = "set"
-	}
-
-	if r.Response.RecursionDesired {
-		setflag["RD"] = "set"
-	}
-
-	if r.Response.RecursionAvailable {
-		setflag["RA"] = "set"
-	}
-
-	if r.Response.Authoritative {
-		setflag["AA"] = "set"
-	}
-
-	if r.Response.AuthenticatedData {
-		setflag["AD"] = "set"
-	}
-
-	if r.Response.CheckingDisabled {
-		setflag["CD"] = "set"
-	}
-
-	if r.Response.Truncated {
-		setflag["TC"] = "set"
-	}
-
-	flags := []string{"QR", "RD", "RA", "AA", "AD", "CD", "TC"}
-	//fmt.Printf("%#v", dns.OpcodeToString[hdr])
-
-	//fmt.Printf("%#v", r.Response)
 
 	var out, header, question, answer, authority, opt, additional, footer string
 
-	header += "<div class='digheader'>\n"
-	header += "<span>"
-	header += "<span>; <<>> NerDiG 0.10 <<>></span><br/>"
-	header += "<span>;; Got answer: </span><br/>"
-	header += "</span><br/>"
-	header += "<span>"
-	header += ";; ->>HEADER<<-" + htmxwrap(";; opcode: "+opcode+",", "span", opcode, []string{opcode, il})
-	header += htmxwrap("status: "+rcode+",", "span", rcode, []string{rcode, il})
-	header += htmxwrap("id: "+id, "span", "qid", []string{il})
-	header += "<br/>"
-	header += "</span>"
-	header += "<span>"
-	header += htmxwrap(";; flags: ", "span", "flags", []string{"flags", il})
-	for _, flag := range flags {
-		//header += htmxwrap(flag, "span class='"+setflag[flag]+"'", flag)
-		header += htmxwrap(flag, "span", flag, []string{flag, il, setflag[flag]})
-	}
-	header += "<span class='sepcolon'>;</span>"
-	header += htmxwrap("QUERY: "+strconv.Itoa(len(r.Response.Question))+",", "span", "QUERYcount", []string{il})
-	header += htmxwrap("ANSWER: "+strconv.Itoa(len(r.Response.Answer))+",", "span", "ANSWERcount", []string{il})
-	header += htmxwrap("AUTHORITY: "+strconv.Itoa(len(r.Response.Ns))+",", "span", "AUTHORITYcount", []string{il})
-	header += htmxwrap("ADDITIONAL: "+strconv.Itoa(len(r.Response.Extra)), "span", "ADDITIONALcount", []string{il})
-	header += "</span>"
-	header += "</div>\n"
-
-	/*
-		for _, a := range r.Response.Answer {
-			//out += strconv.Quote(a.String()) + "\n"
-			//out += "<tr>\n\t<td>" + strings.Replace(a.String(), "\t", "</td>\n\t<td>", -1) + "</td>\n</tr>\n"
-			out += "<div>" + strings.Replace(a.String(), "\t", "</div>\n<div>", -1) + "</div>\n"
-		}
-	*/
-
+	header = headerToHTML(r.Response)
 	incl := map[string]string{
 		"OP": "set",
 		"QU": "set",
@@ -138,24 +51,161 @@ func (r *DigOut) ToHTML() string {
 	if len(r.Response.Extra) < 1 {
 		incl["OP"] = "unset"
 	}
-	/*
-		header += htmxwrap("ANSWER: "+strconv.Itoa(len(r.Response.Answer))+",", "span", "ANSWERcount")
-		header += htmxwrap("AUTHORITY: "+strconv.Itoa(len(r.Response.Ns))+",", "span", "AUTHORITYcount")
-		header += htmxwrap("ADDITIONAL: "+strconv.Itoa(len(r.Response.Extra)), "span", "ADDITIONALcount")
-	*/
-	question += "<div class='digheader'>\n"
-	//question += "<span class=" + incl["QU"] + ">;; QUESTION SECTION:</span><br/>"
-	question += htmxwrap(";; QUESTION SECTION:", "span", "QUsection", []string{il, incl["QU"]})
-	for _, q := range r.Response.Question {
+
+	question = questonToHTML(r.Response, incl["QU"])
+	answer = answerToHTML(r.Response, incl["AN"])
+	authority = authorityToHTML(r.Response, incl["AU"])
+	opt = optToHTML(r.Response, incl["OP"])
+	additional = additionalToHTML(r.Response, incl["AD"])
+
+	footer += "<tr>\n"
+	footer += "<td colspan='5'>\n"
+	// divide the Nanoseconds by 1e6 to get the Milliseconds as a int64
+	footer += ";; " + htmxwrap("Query time: "+strconv.Itoa(int(r.RTT)/1e6)+" ms", "span", "Qtime", []string{il})
+	footer += "</td>\n"
+	footer += "</tr>\n"
+	footer += "<tr>\n"
+	footer += "<td colspan='5'>\n"
+	footer += ";; " + htmxwrap("SERVER: "+r.Nameserver+"("+r.QNSname+") ("+r.Transport[:3]+")", "span", "Qserver", []string{il})
+	footer += "</td>\n"
+	footer += "</tr>\n"
+	footer += "<tr>\n"
+	footer += "<td colspan='5'>\n"
+	footer += ";; WHEN: " + time.Now().Format(time.UnixDate)
+	footer += "</td>\n"
+	footer += "</tr>\n"
+	footer += "<tr>\n"
+	footer += "<td colspan='5'>\n"
+	footer += ";; " + htmxwrap("MSG SIZE: "+strconv.Itoa(r.Response.Len()), "span", "MSGsize", []string{il})
+	footer += "</td>\n"
+	footer += "</tr>\n"
+
+	out += "<table>\n"
+	out += header
+	out += opt
+	out += question
+	out += answer
+	out += authority
+	out += additional
+	out += footer
+	out += "</table>\n"
+
+	fmt.Printf("\n%s\n", out)
+
+	return out
+}
+
+func headerToHTML(msg *dns.Msg) string {
+
+	opcode := dns.OpcodeToString[msg.Opcode]
+	rcode := dns.RcodeToString[msg.Rcode]
+	id := strconv.Itoa(int(msg.Id))
+
+	setflag := map[string]string{
+		"QR": "unset",
+		"RD": "unset",
+		"RA": "unset",
+		"AA": "unset",
+		"AD": "unset",
+		"CD": "unset",
+		"TC": "unset",
+	}
+
+	if msg.Response {
+		setflag["QR"] = "set"
+	}
+
+	if msg.RecursionDesired {
+		setflag["RD"] = "set"
+	}
+
+	if msg.RecursionAvailable {
+		setflag["RA"] = "set"
+	}
+
+	if msg.Authoritative {
+		setflag["AA"] = "set"
+	}
+
+	if msg.AuthenticatedData {
+		setflag["AD"] = "set"
+	}
+
+	if msg.CheckingDisabled {
+		setflag["CD"] = "set"
+	}
+
+	if msg.Truncated {
+		setflag["TC"] = "set"
+	}
+
+	flags := []string{"QR", "RD", "RA", "AA", "AD", "CD", "TC"}
+	//fmt.Printf("%#v", dns.OpcodeToString[hdr])
+
+	//fmt.Printf("%#v", msg)
+
+	var header string
+
+	header += "<tr>\n"
+	header += "<td colspan='5'>; <<>> NerDiG 0.10 <<>></td>\n"
+	header += "</tr>\n"
+	header += "<tr>\n"
+	header += "<td colspan='5'>;; Got answer:</td>\n"
+	header += "</tr>\n"
+	header += "<tr>\n"
+	header += "<td colspan='5'>\n"
+	header += ";; ->>HEADER<<-" + htmxwrap(";; opcode: "+opcode+",", "span", opcode, []string{opcode, il})
+	header += htmxwrap("status: "+rcode+",", "span", rcode, []string{rcode, il})
+	header += htmxwrap("id: "+id, "span", "qid", []string{il})
+	header += "</td>\n"
+	header += "</tr>\n"
+	header += "<tr>\n"
+	header += "<td colspan='5'>\n"
+	header += htmxwrap(";; flags: ", "span", "flags", []string{"flags", il})
+	for _, flag := range flags {
+		//header += htmxwrap(flag, "span class='"+setflag[flag]+"'", flag)
+		header += htmxwrap(flag, "span", flag, []string{flag, il, setflag[flag]})
+	}
+	header += "<span class='sepcolon'>;</span>"
+	header += htmxwrap("QUERY: "+strconv.Itoa(len(msg.Question))+",", "span", "QUERYcount", []string{il})
+	header += htmxwrap("ANSWER: "+strconv.Itoa(len(msg.Answer))+",", "span", "ANSWERcount", []string{il})
+	header += htmxwrap("AUTHORITY: "+strconv.Itoa(len(msg.Ns))+",", "span", "AUTHORITYcount", []string{il})
+	header += htmxwrap("ADDITIONAL: "+strconv.Itoa(len(msg.Extra)), "span", "ADDITIONALcount", []string{il})
+	header += "</td>\n"
+	header += "</tr>\n"
+	header += "<tr>\n<td colspan='5' class='spacer'></td></tr>\n"
+
+	return header
+}
+
+func questonToHTML(msg *dns.Msg, status string) string {
+	var question string
+
+	question += "<tr class='" + status + "'>\n"
+	question += "<td colspan='5'>\n"
+	question += htmxwrap(";; QUESTION SECTION:", "span", "QUsection", []string{il})
+	question += "</td>\n"
+	question += "</tr>\n"
+	question += "<td colspan='5'>\n"
+	for _, q := range msg.Question {
 		question += htmxwrap(strings.TrimSpace(q.String()), "span", "placeholder", []string{il})
 	}
-	question += "</div>\n"
+	question += "</td>\n"
+	question += "</tr>\n"
+	question += "<tr>\n<td colspan='5' class='spacer'></td></tr>\n"
 
-	answer += "<div class='digheader'>\n"
-	//answer += "<span class=" + incl["AN"] + ">;; ANSWER SECTION:</span><br/>"
-	answer += htmxwrap(";; ANSWER SECTION:", "span", "ANsection", []string{il, incl["AN"]})
-	answer += "</div>\n"
-	for _, a := range r.Response.Answer {
+	return question
+}
+
+func answerToHTML(msg *dns.Msg, status string) string {
+	var answer string
+	answer += "<tr class='" + status + "'>\n"
+	answer += "<td colspan='5'>\n"
+	answer += htmxwrap(";; ANSWER SECTION:", "span", "ANsection", []string{il})
+	answer += "</td>\n"
+	answer += "</tr>\n"
+
+	for _, a := range msg.Answer {
 
 		//fmt.Printf("%s\n", a.String())
 
@@ -164,10 +214,11 @@ func (r *DigOut) ToHTML() string {
 		//fmt.Printf("%#v\n", head.Rrtype)
 
 		//out += head.String()
-		answer += htmxwrap(head.Name, "div", "oname", []string{il})
-		answer += htmxwrap(strconv.FormatUint(uint64(head.Ttl), 10), "div", "ttl", []string{il})
-		answer += htmxwrap(dns.ClassToString[head.Class], "div", "rclass", []string{il})
-		answer += htmxwrap(dns.Type(head.Rrtype).String(), "div", "rtype", []string{il})
+		answer += "<tr>\n"
+		answer += htmxwrap(head.Name, "td", "oname", []string{il})
+		answer += htmxwrap(strconv.FormatUint(uint64(head.Ttl), 10), "td", "ttl", []string{il})
+		answer += htmxwrap(dns.ClassToString[head.Class], "td", "rclass", []string{il})
+		answer += htmxwrap(dns.Type(head.Rrtype).String(), "td", "rtype", []string{il})
 
 		rdata := ""
 		for i := 1; i <= dns.NumField(a); i++ {
@@ -176,24 +227,35 @@ func (r *DigOut) ToHTML() string {
 			//out += "<div class=\"" + rfields[i-1] + "\">" + dns.Field(a, i) + "</div>\n"
 			//fmt.Printf("field %v - %#v ", i, dns.Field(a, i))
 		}
-		answer += htmxwrap(rdata, "div", "rdata", []string{il})
-
+		answer += htmxwrap(rdata, "td", "rdata", []string{il, "rdata"})
+		answer += "</tr>\n"
 	}
+	answer += "<tr>\n<td colspan='5' class='spacer'></td></tr>\n"
 
-	authority += "<div class='digheader'>\n"
-	//authority += "<span class=" + incl["AU"] + ">;; AUTHORITY SECTION:</span><br/>"
-	authority += htmxwrap(";; AUTHORITY SECTION:", "span", "AUsection", []string{il, incl["AU"]})
-	authority += "</div>\n"
-	for _, a := range r.Response.Ns {
+	return answer
+}
+
+func authorityToHTML(msg *dns.Msg, status string) string {
+
+	var authority string
+
+	authority += "<tr class='" + status + "'>\n"
+	authority += "<td colspan='5'>\n"
+	authority += htmxwrap(";; AUTHORITY SECTION:", "span", "AUsection", []string{il})
+	authority += "</td>\n"
+	authority += "</tr>\n"
+	for _, a := range msg.Ns {
 
 		head := *a.Header()
 
-		authority += htmxwrap(head.Name, "div", "oname", []string{il})
-		authority += htmxwrap(strconv.FormatUint(uint64(head.Ttl), 10), "div", "ttl", []string{il})
-		authority += htmxwrap(dns.ClassToString[head.Class], "div", "rclass", []string{il})
-		authority += htmxwrap(dns.Type(head.Rrtype).String(), "div", "rtype", []string{il})
+		authority += "<tr>\n"
+		authority += htmxwrap(head.Name, "td", "oname", []string{il})
+		authority += htmxwrap(strconv.FormatUint(uint64(head.Ttl), 10), "td", "ttl", []string{il})
+		authority += htmxwrap(dns.ClassToString[head.Class], "td", "rclass", []string{il})
+		authority += htmxwrap(dns.Type(head.Rrtype).String(), "td", "rtype", []string{il})
 
 		authority += rdatawrap(a, dns.Type(head.Rrtype).String())
+		authority += "</tr>\n"
 		/*
 			rdata := ""
 			for i := 1; i <= dns.NumField(a); i++ {
@@ -202,20 +264,56 @@ func (r *DigOut) ToHTML() string {
 			authority += htmxwrap(rdata, "div", "rdata", []string{il})
 		*/
 	}
+	authority += "<tr>\n<td colspan='5' class='spacer'></td></tr>\n"
 
-	opt += "<div class='digheader'>\n"
-	//opt += "<span class=" + incl["OP"] + ">;; OPT PSEUDOSECTION:</span><br/>"
-	opt += htmxwrap(";; OPT PSEUDOSECTION:", "span", "OPTsection", []string{il, incl["OP"]})
+	return authority
+}
 
-	additional += "<div class='digheader'>\n"
-	//additional += "<span class=" + incl["AD"] + ">;; ADDITIONAL SECTION:</span><br/>"
-	additional += htmxwrap(";; ADDITIONAL SECTION:", "span", "ADsection", []string{il, incl["AD"]})
-	additional += "</div>\n"
+func additionalToHTML(msg *dns.Msg, status string) string {
+	var additional string
 
-	for _, e := range r.Response.Extra {
+	additional += "<tr class='" + status + "'>\n"
+	additional += "<td colspan='5'>\n"
+	//additional += htmxwrap(";; ADDITIONAL SECTION:", "span", "ADsection", []string{il, status})
+	additional += htmxwrap(";; ADDITIONAL SECTION:", "span", "ADsection", []string{il})
+	additional += "</td>\n"
+	additional += "</tr>\n"
+
+	for _, e := range msg.Extra {
 		head := *e.Header()
 
-		// There has GOT to be a better and simpler way to do this
+		if dns.Type(head.Rrtype).String() != "OPT" {
+
+			additional += "<tr>\n"
+			additional += htmxwrap(head.Name, "td", "oname", []string{il})
+			additional += htmxwrap(strconv.FormatUint(uint64(head.Ttl), 10), "td", "ttl", []string{il})
+			additional += htmxwrap(dns.ClassToString[head.Class], "td", "rclass", []string{il})
+			additional += htmxwrap(dns.Type(head.Rrtype).String(), "td", "rtype", []string{il})
+
+			rdata := ""
+			for i := 1; i <= dns.NumField(e); i++ {
+				rdata += dns.Field(e, i) + " "
+			}
+			additional += htmxwrap(rdata, "td", "rdata", []string{il, "rdata"})
+			additional += "</tr>\n"
+		}
+	}
+	additional += "<tr>\n<td colspan='5' class='spacer'></td></tr>\n"
+
+	return additional
+}
+
+func optToHTML(msg *dns.Msg, status string) string {
+	var opt string
+
+	opt += "<tr class='" + status + "'>\n"
+	opt += "<td colspan='5'>\n"
+	opt += htmxwrap(";; OPT PSEUDOSECTION:", "span", "OPTsection", []string{il})
+	opt += "</td>"
+	opt += "</tr>\n"
+
+	for _, e := range msg.Extra {
+		head := *e.Header()
 
 		if dns.Type(head.Rrtype).String() == "OPT" {
 
@@ -224,7 +322,8 @@ func (r *DigOut) ToHTML() string {
 			//
 			// Pretty format the OPT section like
 			//
-			opt += "<span>"
+			opt += "<tr>\n"
+			opt += "<td colspan='5'>\n"
 			opt += htmxwrap("; EDNS: version "+strconv.Itoa(int(f.Version()))+"; ", "span", "EDNSversion", []string{il})
 
 			var fs string
@@ -241,11 +340,13 @@ func (r *DigOut) ToHTML() string {
 			}
 
 			opt += htmxwrap("udp: "+strconv.Itoa(int(f.UDPSize())), "span", "OPTudp", []string{il})
-			opt += "</span><br/>\n"
+			opt += "</td>\n"
+			opt += "</tr>\n"
 
 			for _, o := range f.Option {
 				var s string
-				opt += "<span>"
+				opt += "<tr>\n"
+				opt += "<td colspan='5'>\n"
 				switch o.(type) {
 				case *dns.EDNS0_NSID:
 					to := o.(*dns.EDNS0_NSID)
@@ -286,62 +387,15 @@ func (r *DigOut) ToHTML() string {
 					s += "; ESU: " + o.String()
 				}
 				opt += htmxwrap(s, "span", "EDNSplaceholder", []string{il})
-				opt += "</span><br/>\n"
+				opt += "</td>\n"
+				opt += "</tr>\n"
 			}
 
-			/*
-				rdata := ""
-				for i := 1; i <= dns.NumField(e); i++ {
-					f := dns.Field(e, i)
-					fmt.Printf("%#v", f)
-					//rdata += dns.Field(e, i) + " "
-				}
-				fmt.Printf("optdata:%v\n", rdata)
-			*/
-			//		fmt.Printf("REC:\n %#v\n", e)
-
-		} else {
-
-			additional += htmxwrap(head.Name, "div", "oname", []string{il})
-			additional += htmxwrap(strconv.FormatUint(uint64(head.Ttl), 10), "div", "ttl", []string{il})
-			additional += htmxwrap(dns.ClassToString[head.Class], "div", "rclass", []string{il})
-			additional += htmxwrap(dns.Type(head.Rrtype).String(), "div", "rtype", []string{il})
-
-			rdata := ""
-			for i := 1; i <= dns.NumField(e); i++ {
-				rdata += dns.Field(e, i) + " "
-			}
-			additional += htmxwrap(rdata, "div", "rdata", []string{il})
 		}
 	}
+	opt += "<tr>\n<td colspan='5' class='spacer'></td></tr>\n"
 
-	opt += "</div>\n"
-
-	footer += "<div class='digheader'>\n"
-	footer += "<span>"
-	// divide the Nanoseconds by 1e6 to get the Milliseconds as a int64
-	footer += ";; " + htmxwrap("Query time: "+strconv.Itoa(int(r.RTT)/1e6)+" ms", "span", "Qtime", []string{il})
-	footer += "</span><br/>"
-	footer += "<span>"
-	footer += ";; " + htmxwrap("SERVER: "+r.Nameserver+"("+r.QNSname+") ("+r.Transport[:3]+")", "span", "Qserver", []string{il})
-	footer += "</span><br/>"
-	footer += "<span>"
-	footer += ";; WHEN: " + time.Now().Format(time.UnixDate)
-	footer += "</span><br/>"
-	footer += "<span>"
-	footer += ";; " + htmxwrap("MSG SIZE: "+strconv.Itoa(r.Response.Len()), "span", "MSGsize", []string{il})
-	footer += "</span><br/>"
-	footer += "</div>"
-
-	out += header
-	out += opt
-	out += question
-	out += answer
-	out += authority
-	out += additional
-	out += footer
-
-	return out
+	return opt
 }
 
 func htmxwrap(txt, tag, rfield string, cs []string) string {
@@ -351,7 +405,7 @@ func htmxwrap(txt, tag, rfield string, cs []string) string {
 	ws += "hx-get='" + hxget + rfield + "' "
 	ws += "hx-target='#infobox' "
 	ws += "hx-swap='innerHTML' "
-	ws += ">\n" + txt + "\n</" + tag + ">"
+	ws += ">\n" + txt + "\n</" + tag + ">\n"
 
 	return ws
 
@@ -368,7 +422,7 @@ func rdatawrap(rr dns.RR, rtype string) string {
 		for i := 1; i <= dns.NumField(rr); i++ {
 			rdata += dns.Field(rr, i) + " "
 		}
-		wrr += htmxwrap(rdata, "div", "rdata", []string{il})
+		wrr += htmxwrap(rdata, "td", "rdata", []string{il, "rdata"})
 	}
 	return wrr
 }

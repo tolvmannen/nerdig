@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-        <title>works!</title>
+        <title>NerDIG</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="script/style.css">
@@ -11,6 +11,7 @@
 	-->
         <script src="script/1.9.9.htmx.min.js"></script>
         <script src="script/1.9.9.json-enc.js"></script>
+
 </head>
 <body>
 
@@ -19,11 +20,10 @@
 <section class="header">
 
     <div class="banner">
-        <h1>NERDIG banner placeholder</h1>
+        <h1>NerDIG</h1>
     </div>
 
     <div class="digform">
-                <!-- <form hx-post="https://ardeth.tolvmannen.se:5555/dig/webclient"> -->
                 <form hx-post="dig/webclient"
                 hx-target="#terminal" 
                 hx-swap="innerHTML" 
@@ -34,37 +34,50 @@
 
         <div class="mainquery">
 
-            <input type="text" id="Qname" name="Qname" placeholder="query name" required>
+            <span>
+                    <p class='note'>Name</p>
+                    <input type="text" id="Qname" name="Qname" required>
+            </span>
 
-            <select id="Qtype" name="Qtype" required>
-                <option value="A">A</option>
-                <option value="AAAA">AAAA</option>
-                <option value="NS">NS</option>
-                <option value="MX">MX</option>
-                <option value="TXT">TXT</option>
-                <option value="SOA">SOA</option>
-                <option value="PTR">PTR</option>
-                <option value="CNAME">CNAME</option>
-                <option value="SRV">SRV</option>
-                <option disabled>──────────</option>
-                <option value="NSEC">NSEC</option>
-                <option value="RRSIG">RRSIG</option>
-                <option value="DNSKEY">DNSKEY</option>
-                <option value="CDNSKEY">CDNSKEY</option>
-                <option value="DS">DS</option>
-                <option value="CDS">CDS</option>
-                <option value="NSEC3PARAM">NSEC3PARAM</option>
-                <option value="RP">RP</option>
-                <!-- Add more options as needed -->
-            </select>
+            <span>
+                    <p class='note'>Type</p>
+                    <select id="Qtype" name="Qtype" required>
+                        <option value="A">A</option>
+                        <option value="AAAA">AAAA</option>
+                        <option value="NS">NS</option>
+                        <option value="MX">MX</option>
+                        <option value="TXT">TXT</option>
+                        <option value="SOA">SOA</option>
+                        <option value="PTR">PTR</option>
+                        <option value="CNAME">CNAME</option>
+                        <option value="SRV">SRV</option>
+                        <option disabled>──────────</option>
+                        <option value="NSEC">NSEC</option>
+                        <option value="RRSIG">RRSIG</option>
+                        <option value="DNSKEY">DNSKEY</option>
+                        <option value="CDNSKEY">CDNSKEY</option>
+                        <option value="DS">DS</option>
+                        <option value="CDS">CDS</option>
+                        <option value="NSEC3PARAM">NSEC3PARAM</option>
+                        <option value="RP">RP</option>
+                        <option value="AXFR">AXFR</option>
+                        <!-- Add more options as needed -->
+                    </select>
+            </span>
 
-            <input type="text" id="Nameserver" name="Nameserver" value="1.1.1.1" required>
+            <span>
+                    <p class='note'>Nameserver</p>
+                    <input type="text" id="Nameserver" name="Nameserver" value="1.1.1.1">
+            </span>
+
             <button type="submit">DIG</button>
+
 
         </div>
         <div class="options">
             <span class="infotag"> 
-                    Flags <sup>&#9432;</sup> 
+                    Flags: 
+                    <!--<sup>&#9432;</sup>--> 
             </span>
 
             <input type="checkbox" id="RD" value="true" name="RD" checked> 
@@ -119,17 +132,11 @@
                 <summary>Extra Options</summary>
                 <input type="text" id="Port" name="Port" value="53" required>
                 <input type="text" id="UDPsize" name="UDPsize" value="1232" required>
+                <input type="text" id="Tsig" name="Tsig" value="" placeholder="hmac-algorithm:name:key">
             </details>
             </span>
         </div>
 
-<!--
-        <input type="hidden" id="Nsid" name="Nsid" value="false">
-        <input type="hidden" id="Nameserver" name="Nameserver" value="1.1.1.1">
-        <input type="hidden" id="Transport" name="Transport" value="udp">
-        <input type="hidden" id="Port" name="Port" value="53">
-        <input type="hidden" id="IpVersion" name="IpVersion" value="4">
--->
 
         </form>
     </div>
@@ -137,37 +144,45 @@
 <section class="main">
 
  
-	<div class="digbox">
 	<div id="terminal">
 
-	dig% >
-
-	<!--
-	<div class="digheader">;; opcode: QUERY, status: NOERROR, id: 59447</div>
-	
-	<div>iis.se.</div>
-	<div>3476</div>
-	<div>IN</div>
-	<div>A</div>
-	<div>159.253.30.207</div>
-
-	<div>iis.se.</div>
-	<div>3476</div>
-	<div>IN</div>
-	<div>RRSIG</div>
-	<div class="rdata">A 13 2 3600 20240920071025 20240816054025 24605 iis.se. pUrDhfC5phC5iq1f6ubOLxpVhOJy8m1sJ1AamC6+CGsBBfxyNcSgyw9VpnvClt4+F4/MonSVEQBhajqGeoe6tg==</div>
-	-->
-
-
+                <div>
+                <h3>NAME</h3>
+                <p>
+                    NerDIG - No Experience Required DIG.
+                </p>
+                <h3>DESCRIPTION</h3>
+                <p>
+                    DIG is a flexible tool for interrogating DNS name servers. It performs DNS lookups and 
+                    displays the answers that are returned from the name server(s) that were queried. 
+                </p>
+                <p>
+                    According to the manual pages for DIG, "Most DNS administrators use dig to troubleshoot
+                    DNS problems because of its flexibility, ease of use and clarity of output". 
+                </p>
+                <p>
+                    While user friendly, it can be a bit picky about who it considers a friend. NerDIG is here to help with that.
+                </p>
+                <h3>SIMPLE USAGE</h3>
+                <p>
+                    Enter the domain name you wish to 
+                        query in the appropriatly named input field and press the button.
+                </p>
+                <p>
+                    There are a number of options that can be toggeled, selected, or changed. 
+                    They largely correspond to the options available in the regular DIG client. 
+                    The advantage of NerDIG is that it will let you click on almost anything 
+                    to get an explanation of what it means and what it does. 
+                </p>
+                </div>
 
 	</div>
- 	</div>
  	<div id="infobox"> 
                     Info about flags, sections and other stuff
  	</div>
 
 </section>
-<section class="footer"> 
+<section class="footer fullwidth"> 
     
     <span>
     <label for="hide_unset"><img src="tt.png" width="50" height="50"/> </label>
@@ -177,9 +192,3 @@
 </body>
 </html>
 
-<!--
-<span class=""
-	ws += "hx-get='" + hxget + rfield + "' "
-	ws += "hx-target='#infobox' "
-	ws += "hx-swap='innerHTML' "
--->

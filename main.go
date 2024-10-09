@@ -53,7 +53,6 @@ func main() {
 	if err != nil {
 		fmt.Printf("YAML error: %v\n", err)
 	}
-	fmt.Printf("STRUCT:\n%#v", hc)
 
 	// Create a Gin router
 	router := gin.Default()

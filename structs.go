@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"os"
 	"strconv"
@@ -26,6 +27,7 @@ type Query struct {
 	NoCrypto   bool   `json:"NoCrypto"`
 	Nsid       bool   `json:"Nsid"`
 	UDPsize    uint16 `json:"UDPsize"`
+	Tsig       string `json:"Tsig"`
 }
 
 type WebQuery struct {
@@ -43,6 +45,7 @@ type WebQuery struct {
 	NoCrypto   string `json:"NoCrypto"`
 	Nsid       string `json:"Nsid"`
 	UDPsize    string `json:"UDPsize"`
+	Tsig       string `json:"Tsig"`
 }
 
 type DigOut struct {
@@ -51,6 +54,7 @@ type DigOut struct {
 	RTT        time.Duration `json:"Round trip time"`
 	Nameserver string        `json:"Nameserver"` // Name server IP
 	QNSname    string        `json:"QNSname"`    // resolver name before translation
+	SendHeader string        `json:"SendHeader"` // flags and options sent
 	MsgSize    int           `json:"Message Size"`
 	Transport  string        `json:"Transport"`
 }
@@ -79,8 +83,6 @@ func (wq *WebQuery) Parse() Query {
 	q.NoCrypto = FixBool(wq.NoCrypto)
 	q.Nsid = FixBool(wq.Nsid)
 	udp, err := strconv.ParseUint(wq.UDPsize, 10, 32)
-	fmt.Printf("UDP	%+v\n", udp)
-
 	if err != nil {
 		if udp >= dns.MinMsgSize || udp <= dns.MaxMsgSize {
 			q.UDPsize = uint16(udp)
@@ -88,6 +90,7 @@ func (wq *WebQuery) Parse() Query {
 	} else {
 		q.UDPsize = 1232
 	}
+	q.Tsig = wq.Tsig
 
 	return q
 
@@ -111,16 +114,26 @@ func (wq *WebQuery) SendHeader() string {
 }
 */
 
-func GetSystemResolver() string {
+func GetSystemResolver(ipver string) string {
 	conf, err := dns.ClientConfigFromFile("/etc/resolv.conf")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(2)
 	}
-	ns := conf.Servers[0]
-	// Strip the [ and ] from around the nameserver obtained from /etc/resolv.conf
-	//ns = ns[1 : len(ns)-1]
+	// check for the first available server of right i version
+	var ns string
+	for _, ip := range conf.Servers {
+		ns = net.ParseIP(ip).String()
+		if ipver == "6" && strings.Contains(ns, ":") {
+			break
+		}
+		if ipver == "4" && strings.Contains(ns, ".") {
+			break
+		}
+
+	}
 	return ns
+
 }
 
 // Harmonize lookup nameserver to always use IP:Port
@@ -131,11 +144,11 @@ func (q *Query) GetLookupNS() string {
 
 	// If no nameserver was passed, use system resolver
 	if len(q.Nameserver) == 0 {
-		ns = GetSystemResolver()
-		return ns
+		q.Nameserver = GetSystemResolver(q.IpVersion)
 	}
 
 	ip := net.ParseIP(q.Nameserver)
+
 	if ip != nil {
 		if q.IpVersion == "6" {
 			ns = "[" + q.Nameserver + "]:" + q.Port
@@ -145,7 +158,7 @@ func (q *Query) GetLookupNS() string {
 	} else {
 		IPlist, err := net.LookupIP(q.Nameserver)
 		if err != nil {
-			fmt.Printf("Nameserver lookup error: %v\n", err)
+			log.Print(err)
 		} else {
 			for _, ip := range IPlist {
 				if q.IpVersion == "6" {
