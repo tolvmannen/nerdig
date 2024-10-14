@@ -90,6 +90,8 @@ func (r *DigOut) ToHTML() string {
 	out += footer
 	out += "</table>\n"
 
+	out += "<div id='digcli' class='digcli-box' hx-swap-oob='outerHTML'><p>dig info!</p></div>"
+
 	fmt.Printf("\n%s\n", out)
 
 	return out
@@ -154,9 +156,9 @@ func headerToHTML(msg *dns.Msg) string {
 	header += "</tr>\n"
 	header += "<tr>\n"
 	header += "<td colspan='5'>\n"
-	header += ";; ->>HEADER<<-" + htmxwrap(";; opcode: "+opcode+",", "span", opcode, []string{opcode, il})
-	header += htmxwrap("status: "+rcode+",", "span", rcode, []string{rcode, il})
-	header += htmxwrap("id: "+id, "span", "qid", []string{il})
+	header += ";; ->>HEADER<<-" + htmxwrap(";; opcode: "+opcode+",", "span", "opcode", []string{opcode, il})
+	header += htmxwrap("status: "+rcode+",", "span", "rcode", []string{rcode, il})
+	header += htmxwrap("id: "+id, "span", "query-id", []string{il})
 	header += "</td>\n"
 	header += "</tr>\n"
 	header += "<tr>\n"
@@ -164,7 +166,7 @@ func headerToHTML(msg *dns.Msg) string {
 	header += htmxwrap(";; flags: ", "span", "flags", []string{"flags", il})
 	for _, flag := range flags {
 		//header += htmxwrap(flag, "span class='"+setflag[flag]+"'", flag)
-		header += htmxwrap(flag, "span", flag, []string{flag, il, setflag[flag]})
+		header += htmxwrap(flag, "span", flag+"flag", []string{flag, il, setflag[flag]})
 	}
 	header += "<span class='sepcolon'>;</span>"
 	header += htmxwrap("QUERY: "+strconv.Itoa(len(msg.Question))+",", "span", "QUERYcount", []string{il})
@@ -201,7 +203,7 @@ func answerToHTML(msg *dns.Msg, status string) string {
 	var answer string
 	answer += "<tr class='" + status + "'>\n"
 	answer += "<td colspan='5'>\n"
-	answer += htmxwrap(";; ANSWER SECTION:", "span", "ANsection", []string{il})
+	answer += htmxwrap(";; ANSWER SECTION:", "span", "ANS-section", []string{il})
 	answer += "</td>\n"
 	answer += "</tr>\n"
 
@@ -215,20 +217,23 @@ func answerToHTML(msg *dns.Msg, status string) string {
 
 		//out += head.String()
 		answer += "<tr>\n"
-		answer += htmxwrap(head.Name, "td", "oname", []string{il})
+		answer += htmxwrap(head.Name, "td", "owner-name", []string{il})
 		answer += htmxwrap(strconv.FormatUint(uint64(head.Ttl), 10), "td", "ttl", []string{il})
-		answer += htmxwrap(dns.ClassToString[head.Class], "td", "rclass", []string{il})
-		answer += htmxwrap(dns.Type(head.Rrtype).String(), "td", "rtype", []string{il})
+		answer += htmxwrap(dns.ClassToString[head.Class], "td", "record-class", []string{il})
+		answer += htmxwrap(dns.Type(head.Rrtype).String(), "td", "record-type", []string{il})
 
-		rdata := ""
-		for i := 1; i <= dns.NumField(a); i++ {
-			rdata += dns.Field(a, i) + " "
-			//out += dns.Field(a, i) + " "
-			//out += "<div class=\"" + rfields[i-1] + "\">" + dns.Field(a, i) + "</div>\n"
-			//fmt.Printf("field %v - %#v ", i, dns.Field(a, i))
-		}
-		answer += htmxwrap(rdata, "td", "rdata", []string{il, "rdata"})
+		answer += rdatawrap(a, dns.Type(head.Rrtype).String())
 		answer += "</tr>\n"
+		/*
+			rdata := ""
+			for i := 1; i <= dns.NumField(a); i++ {
+				rdata += dns.Field(a, i) + " "
+				//out += dns.Field(a, i) + " "
+				//out += "<div class=\"" + rfields[i-1] + "\">" + dns.Field(a, i) + "</div>\n"
+				//fmt.Printf("field %v - %#v ", i, dns.Field(a, i))
+			}
+			answer += htmxwrap(rdata, "td", "rdata-"+dns.Type(head.Rrtype).String(), []string{il, "rdata"})
+		*/
 	}
 	answer += "<tr>\n<td colspan='5' class='spacer'></td></tr>\n"
 
@@ -241,7 +246,7 @@ func authorityToHTML(msg *dns.Msg, status string) string {
 
 	authority += "<tr class='" + status + "'>\n"
 	authority += "<td colspan='5'>\n"
-	authority += htmxwrap(";; AUTHORITY SECTION:", "span", "AUsection", []string{il})
+	authority += htmxwrap(";; AUTHORITY SECTION:", "span", "AUTH-section", []string{il})
 	authority += "</td>\n"
 	authority += "</tr>\n"
 	for _, a := range msg.Ns {
@@ -275,7 +280,7 @@ func additionalToHTML(msg *dns.Msg, status string) string {
 	additional += "<tr class='" + status + "'>\n"
 	additional += "<td colspan='5'>\n"
 	//additional += htmxwrap(";; ADDITIONAL SECTION:", "span", "ADsection", []string{il, status})
-	additional += htmxwrap(";; ADDITIONAL SECTION:", "span", "ADsection", []string{il})
+	additional += htmxwrap(";; ADDITIONAL SECTION:", "span", "ADD-section", []string{il})
 	additional += "</td>\n"
 	additional += "</tr>\n"
 
@@ -289,13 +294,16 @@ func additionalToHTML(msg *dns.Msg, status string) string {
 			additional += htmxwrap(strconv.FormatUint(uint64(head.Ttl), 10), "td", "ttl", []string{il})
 			additional += htmxwrap(dns.ClassToString[head.Class], "td", "rclass", []string{il})
 			additional += htmxwrap(dns.Type(head.Rrtype).String(), "td", "rtype", []string{il})
-
-			rdata := ""
-			for i := 1; i <= dns.NumField(e); i++ {
-				rdata += dns.Field(e, i) + " "
-			}
-			additional += htmxwrap(rdata, "td", "rdata", []string{il, "rdata"})
+			additional += rdatawrap(e, dns.Type(head.Rrtype).String())
 			additional += "</tr>\n"
+
+			/*
+				rdata := ""
+				for i := 1; i <= dns.NumField(e); i++ {
+					rdata += dns.Field(e, i) + " "
+				}
+				additional += htmxwrap(rdata, "td", "rdata", []string{il, "rdata"})
+			*/
 		}
 	}
 	additional += "<tr>\n<td colspan='5' class='spacer'></td></tr>\n"
@@ -308,7 +316,7 @@ func optToHTML(msg *dns.Msg, status string) string {
 
 	opt += "<tr class='" + status + "'>\n"
 	opt += "<td colspan='5'>\n"
-	opt += htmxwrap(";; OPT PSEUDOSECTION:", "span", "OPTsection", []string{il})
+	opt += htmxwrap(";; OPT PSEUDOSECTION:", "span", "OPT-section", []string{il})
 	opt += "</td>"
 	opt += "</tr>\n"
 
@@ -422,7 +430,7 @@ func rdatawrap(rr dns.RR, rtype string) string {
 		for i := 1; i <= dns.NumField(rr); i++ {
 			rdata += dns.Field(rr, i) + " "
 		}
-		wrr += htmxwrap(rdata, "td", "rdata", []string{il, "rdata"})
+		wrr += htmxwrap(rdata, "td", "rdata-"+rtype, []string{il, "rdata"})
 	}
 	return wrr
 }

@@ -114,7 +114,13 @@ func main() {
 	router.GET("/dig/info/*name", func(c *gin.Context) {
 		// trim any leading slash (applies when no 'name' is provided)
 		name := strings.TrimLeft(c.Param("name"), "/")
-		outstr := "<p>Here be info for: <b> " + name + "</b></p>"
+		outstr := ""
+		mdfile, err := os.ReadFile("mdfiles/" + name + ".md")
+		if err != nil {
+			outstr = "<p>Could not open file: " + name + ".md (" + err.Error() + "</p>"
+		} else {
+			outstr = string(mdToHTML(mdfile))
+		}
 		c.Data(http.StatusOK, ContentTypeHTML, []byte(outstr))
 
 	})
