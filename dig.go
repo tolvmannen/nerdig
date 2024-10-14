@@ -64,10 +64,7 @@ func dig(query Query) DigOut {
 	message.Extra = append(message.Extra, o)
 
 	// What are we sending...
-	//sendheader := ";; " + htmxwrap(message.String(), "span", "sendheader", []string{il})
-	//fmt.Printf("SENDING: %+v\n", message)
-	sendheader := "placeholder"
-	fmt.Printf("%T \n %#v", message, message)
+	fmt.Printf("SENDING: %+v\n", message)
 
 	// Preserve name server name to use in output. Blank = system resolver
 	QNS := "System Resolver"
@@ -96,8 +93,6 @@ func dig(query Query) DigOut {
 		}
 	}
 
-	//t := new(dns.Transfer)
-
 	response, rtt, err := client.Exchange(message, nameserver)
 
 	if err != nil {
@@ -108,11 +103,12 @@ func dig(query Query) DigOut {
 
 	digOut := DigOut{
 		Qname:      query.Qname,
+		Query:      message,
 		Response:   response,
 		RTT:        rtt, // Note to self: rtt is in nanoseconds (1M ns = 1 millisecond)
 		Nameserver: nameserver,
 		QNSname:    QNS,
-		SendHeader: sendheader,
+		ShowQuery:  query.ShowQuery,
 		MsgSize:    msgSize,
 		Transport:  query.Transport,
 	}

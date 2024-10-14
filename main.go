@@ -39,6 +39,7 @@ type httpconf struct {
 	AllowHeaders     []string `yaml:"AllowHeaders" json:"AllowHeaders"`
 	ExposeHeaders    []string `yaml:"ExposeHeaders" json:"ExposeHeaders"`
 	AllowCredentials bool     `yaml:"AllowCredentials" json:"AllowCredentials"`
+	LogLevel         int      `yaml:"LogLevel" json:"LogLevel"`
 }
 
 func main() {
@@ -107,7 +108,7 @@ func main() {
 
 		//fmt.Printf("\n\n%+v\n\n", out)
 
-		outstr := out.ToHTML()
+		outstr := out.ToHTML(hc.LogLevel)
 		c.Data(http.StatusOK, ContentTypeHTML, []byte(outstr))
 	})
 

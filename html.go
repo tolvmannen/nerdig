@@ -1,20 +1,12 @@
 package main
 
 import (
-	//"crypto/tls"
 	"encoding/hex"
 	"fmt"
-	"time"
-	//"log"
-	//"net/http"
 	"strconv"
 	"strings"
+	"time"
 
-	//"time"
-
-	//"github.com/gin-contrib/cors"
-	//"github.com/gin-contrib/static"
-	//"github.com/gin-gonic/gin"
 	"github.com/miekg/dns"
 )
 
@@ -24,39 +16,23 @@ const (
 	hxget string = "dig/info/"
 )
 
-func (r *DigOut) ToHTML() string {
+func (r *DigOut) ToHTML(loglv int) string {
 
-	var out, header, question, answer, authority, opt, additional, footer string
+	var out, banner, qheader, qopt, header, question, answer, authority, opt, additional, footer string
 
-	header = headerToHTML(r.Response)
-	incl := map[string]string{
-		"OP": "set",
-		"QU": "set",
-		"AN": "set",
-		"AU": "set",
-		"AD": "set",
-	}
-	if len(r.Response.Question) < 1 {
-		incl["QU"] = "unset"
-	}
-	if len(r.Response.Answer) < 1 {
-		incl["AN"] = "unset"
-	}
-	if len(r.Response.Ns) < 1 {
-		incl["AU"] = "unset"
-	}
-	if len(r.Response.Extra) < 2 {
-		incl["AD"] = "unset"
-	}
-	if len(r.Response.Extra) < 1 {
-		incl["OP"] = "unset"
-	}
+	banner = "<tr>\n"
+	banner += "<td colspan='5'>; <<>> NerDiG 0.10 <<>></td>\n"
+	banner += "</tr>\n"
 
-	question = questonToHTML(r.Response, incl["QU"])
-	answer = answerToHTML(r.Response, incl["AN"])
-	authority = authorityToHTML(r.Response, incl["AU"])
-	opt = optToHTML(r.Response, incl["OP"])
-	additional = additionalToHTML(r.Response, incl["AD"])
+	qheader += headerToHTML(r.Query)
+	qopt += optToHTML(r.Query)
+
+	header += headerToHTML(r.Response)
+	question = questonToHTML(r.Response)
+	answer = answerToHTML(r.Response)
+	authority = authorityToHTML(r.Response)
+	opt = optToHTML(r.Response)
+	additional = additionalToHTML(r.Response)
 
 	footer += "<tr>\n"
 	footer += "<td colspan='5'>\n"
@@ -81,6 +57,11 @@ func (r *DigOut) ToHTML() string {
 	footer += "</tr>\n"
 
 	out += "<table>\n"
+	out += banner
+	if r.ShowQuery {
+		out += qheader
+		out += qopt
+	}
 	out += header
 	out += opt
 	out += question
@@ -92,7 +73,9 @@ func (r *DigOut) ToHTML() string {
 
 	out += "<div id='digcli' class='digcli-box' hx-swap-oob='outerHTML'><p>dig info!</p></div>"
 
-	fmt.Printf("\n%s\n", out)
+	if loglv > 1 {
+		fmt.Printf("\n%s\n", out)
+	}
 
 	return out
 }
@@ -113,8 +96,11 @@ func headerToHTML(msg *dns.Msg) string {
 		"TC": "unset",
 	}
 
+	// Sending vs receiving
+	direction := "Sending:"
 	if msg.Response {
 		setflag["QR"] = "set"
+		direction = "Got answer:"
 	}
 
 	if msg.RecursionDesired {
@@ -142,17 +128,14 @@ func headerToHTML(msg *dns.Msg) string {
 	}
 
 	flags := []string{"QR", "RD", "RA", "AA", "AD", "CD", "TC"}
-	//fmt.Printf("%#v", dns.OpcodeToString[hdr])
-
-	//fmt.Printf("%#v", msg)
 
 	var header string
 
+	//header += "<tr>\n"
+	//header += "<td colspan='5'>; <<>> NerDiG 0.10 <<>></td>\n"
+	//header += "</tr>\n"
 	header += "<tr>\n"
-	header += "<td colspan='5'>; <<>> NerDiG 0.10 <<>></td>\n"
-	header += "</tr>\n"
-	header += "<tr>\n"
-	header += "<td colspan='5'>;; Got answer:</td>\n"
+	header += "<td colspan='5'>;; " + direction + "</td>\n"
 	header += "</tr>\n"
 	header += "<tr>\n"
 	header += "<td colspan='5'>\n"
@@ -165,7 +148,6 @@ func headerToHTML(msg *dns.Msg) string {
 	header += "<td colspan='5'>\n"
 	header += htmxwrap(";; flags: ", "span", "flags", []string{"flags", il})
 	for _, flag := range flags {
-		//header += htmxwrap(flag, "span class='"+setflag[flag]+"'", flag)
 		header += htmxwrap(flag, "span", flag+"flag", []string{flag, il, setflag[flag]})
 	}
 	header += "<span class='sepcolon'>;</span>"
@@ -180,8 +162,13 @@ func headerToHTML(msg *dns.Msg) string {
 	return header
 }
 
-func questonToHTML(msg *dns.Msg, status string) string {
+func questonToHTML(msg *dns.Msg) string {
 	var question string
+
+	var status string
+	if len(msg.Question) < 1 {
+		status = "unset"
+	}
 
 	question += "<tr class='" + status + "'>\n"
 	question += "<td colspan='5'>\n"
@@ -199,8 +186,14 @@ func questonToHTML(msg *dns.Msg, status string) string {
 	return question
 }
 
-func answerToHTML(msg *dns.Msg, status string) string {
+func answerToHTML(msg *dns.Msg) string {
 	var answer string
+
+	var status string
+	if len(msg.Answer) < 1 {
+		status = "unset"
+	}
+
 	answer += "<tr class='" + status + "'>\n"
 	answer += "<td colspan='5'>\n"
 	answer += htmxwrap(";; ANSWER SECTION:", "span", "ANS-section", []string{il})
@@ -209,13 +202,8 @@ func answerToHTML(msg *dns.Msg, status string) string {
 
 	for _, a := range msg.Answer {
 
-		//fmt.Printf("%s\n", a.String())
-
 		head := *a.Header()
 
-		//fmt.Printf("%#v\n", head.Rrtype)
-
-		//out += head.String()
 		answer += "<tr>\n"
 		answer += htmxwrap(head.Name, "td", "owner-name", []string{il})
 		answer += htmxwrap(strconv.FormatUint(uint64(head.Ttl), 10), "td", "ttl", []string{il})
@@ -240,9 +228,14 @@ func answerToHTML(msg *dns.Msg, status string) string {
 	return answer
 }
 
-func authorityToHTML(msg *dns.Msg, status string) string {
+func authorityToHTML(msg *dns.Msg) string {
 
 	var authority string
+
+	var status string
+	if len(msg.Ns) < 1 {
+		status = "unset"
+	}
 
 	authority += "<tr class='" + status + "'>\n"
 	authority += "<td colspan='5'>\n"
@@ -274,12 +267,16 @@ func authorityToHTML(msg *dns.Msg, status string) string {
 	return authority
 }
 
-func additionalToHTML(msg *dns.Msg, status string) string {
+func additionalToHTML(msg *dns.Msg) string {
 	var additional string
+
+	var status string
+	if len(msg.Extra) < 2 {
+		status = "unset"
+	}
 
 	additional += "<tr class='" + status + "'>\n"
 	additional += "<td colspan='5'>\n"
-	//additional += htmxwrap(";; ADDITIONAL SECTION:", "span", "ADsection", []string{il, status})
 	additional += htmxwrap(";; ADDITIONAL SECTION:", "span", "ADD-section", []string{il})
 	additional += "</td>\n"
 	additional += "</tr>\n"
@@ -311,8 +308,13 @@ func additionalToHTML(msg *dns.Msg, status string) string {
 	return additional
 }
 
-func optToHTML(msg *dns.Msg, status string) string {
+func optToHTML(msg *dns.Msg) string {
 	var opt string
+
+	var status string
+	if len(msg.Extra) < 1 {
+		status = "unset"
+	}
 
 	opt += "<tr class='" + status + "'>\n"
 	opt += "<td colspan='5'>\n"

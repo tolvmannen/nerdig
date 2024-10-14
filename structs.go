@@ -26,6 +26,7 @@ type Query struct {
 	DO         bool   `json:"DO"`
 	NoCrypto   bool   `json:"NoCrypto"`
 	Nsid       bool   `json:"Nsid"`
+	ShowQuery  bool   `json:"ShowQuery"`
 	UDPsize    uint16 `json:"UDPsize"`
 	Tsig       string `json:"Tsig"`
 }
@@ -44,17 +45,19 @@ type WebQuery struct {
 	DO         string `json:"DO"`
 	NoCrypto   string `json:"NoCrypto"`
 	Nsid       string `json:"Nsid"`
+	ShowQuery  string `json:"ShowQuery"`
 	UDPsize    string `json:"UDPsize"`
 	Tsig       string `json:"Tsig"`
 }
 
 type DigOut struct {
 	Qname      string        `json:"Qname"`
-	Response   *dns.Msg      `json:"Response"`
+	Query      *dns.Msg      `json:"Query"`    // message sent to name server
+	Response   *dns.Msg      `json:"Response"` // response from nameserver
 	RTT        time.Duration `json:"Round trip time"`
 	Nameserver string        `json:"Nameserver"` // Name server IP
 	QNSname    string        `json:"QNSname"`    // resolver name before translation
-	SendHeader string        `json:"SendHeader"` // flags and options sent
+	ShowQuery  bool          `json:"ShowQuery"`
 	MsgSize    int           `json:"Message Size"`
 	Transport  string        `json:"Transport"`
 }
@@ -82,6 +85,7 @@ func (wq *WebQuery) Parse() Query {
 	q.DO = FixBool(wq.DO)
 	q.NoCrypto = FixBool(wq.NoCrypto)
 	q.Nsid = FixBool(wq.Nsid)
+	q.ShowQuery = FixBool(wq.ShowQuery)
 	udp, err := strconv.ParseUint(wq.UDPsize, 10, 32)
 	if err != nil {
 		if udp >= dns.MinMsgSize || udp <= dns.MaxMsgSize {

@@ -1,4 +1,5 @@
 TLS: none           # auto | local | none
+LogLevel: 0
 Address: ""         # empty string binds to all available ip-addresses.
 Port: "5555"
 Certfile: ""        # Only used with TLS: local 
