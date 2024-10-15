@@ -108,7 +108,10 @@ func main() {
 
 		//fmt.Printf("\n\n%+v\n\n", out)
 
-		outstr := out.ToHTML(hc.LogLevel)
+		outstr := out.ToHTML()
+
+		outstr += query.ToCLI()
+
 		c.Data(http.StatusOK, ContentTypeHTML, []byte(outstr))
 	})
 

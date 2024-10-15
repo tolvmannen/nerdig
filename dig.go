@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -64,7 +64,7 @@ func dig(query Query) DigOut {
 	message.Extra = append(message.Extra, o)
 
 	// What are we sending...
-	fmt.Printf("SENDING: %+v\n", message)
+	//fmt.Printf("SENDING: %+v\n", message)
 
 	// Preserve name server name to use in output. Blank = system resolver
 	QNS := "System Resolver"

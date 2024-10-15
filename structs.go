@@ -88,11 +88,11 @@ func (wq *WebQuery) Parse() Query {
 	q.ShowQuery = FixBool(wq.ShowQuery)
 	udp, err := strconv.ParseUint(wq.UDPsize, 10, 32)
 	if err != nil {
+		q.UDPsize = 1232
+	} else {
 		if udp >= dns.MinMsgSize || udp <= dns.MaxMsgSize {
 			q.UDPsize = uint16(udp)
 		}
-	} else {
-		q.UDPsize = 1232
 	}
 	q.Tsig = wq.Tsig
 

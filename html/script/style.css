@@ -200,9 +200,10 @@ details {
 .infowrapper {
 	display: flex;
 	flex-direction: column;
+	justify-content: start;
 	/*justify-content: center;*/
 	align-items: center;
-	width: clamp(320px, 30%, 600px);
+	width: clamp(320px, 40%, 600px);
     	background-color: var(--primary-color);
 	border-radius: 15px;
 
@@ -216,9 +217,12 @@ details {
 	width: clamp(320px, 30%, 600px);
 	padding: 10px;
 	*/ 
-	width: calc(100% - 4rem);
-	margin: 2rem;
-	padding: 1.2rem;
+	width: calc(100% - 6rem);
+	margin-top: 0.1rem;
+	margin-right: 2rem;
+	margin-bottom: 2rem;
+	margin-left: 2rem;
+	padding: 1.3rem;
     	color: var(--text-color);
     	background-color: var(--bg-color);
 	border-radius: 40px 0 40px 0;
@@ -230,9 +234,23 @@ details {
 	margin-left: -0.4rem;
 }
 
+#cpcmd {
+	position: relative;
+	padding: 1rem;
+    	color: var(--terminal-text-color);
+    	background-color: var(--terminal-bg-color);
+	border-radius: 15px;
+	cursor: copy;
+}
+
+#cpcmd:hover {
+	color: var(--hover-color);
+}
+
 #terminal {
 	display: flex;
 	flex-direction: row;
+	align-items: start;
 	flex-grow: 1;
 	padding: 10px;
 	font-size: 0.8rem;
@@ -240,7 +258,7 @@ details {
     	color: var(--terminal-text-color);
     	background-color: var(--terminal-bg-color);
 	border-radius: 15px;
-	width: clamp(300px, 70%, 800px);
+	width: clamp(300px, 60%, 800px);
 }
 
 #terminal div p, 

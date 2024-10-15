@@ -16,7 +16,7 @@ const (
 	hxget string = "dig/info/"
 )
 
-func (r *DigOut) ToHTML(loglv int) string {
+func (r *DigOut) ToHTML() string {
 
 	var out, banner, qheader, qopt, header, question, answer, authority, opt, additional, footer string
 
@@ -71,11 +71,11 @@ func (r *DigOut) ToHTML(loglv int) string {
 	out += footer
 	out += "</table>\n"
 
-	out += "<div id='digcli' class='digcli-box' hx-swap-oob='outerHTML'><p>dig info!</p></div>"
-
-	if loglv > 1 {
-		fmt.Printf("\n%s\n", out)
-	}
+	/*
+		if loglv > 1 {
+			fmt.Printf("\n%s\n", out)
+		}
+	*/
 
 	return out
 }
@@ -435,6 +435,82 @@ func rdatawrap(rr dns.RR, rtype string) string {
 		wrr += htmxwrap(rdata, "td", "rdata-"+rtype, []string{il, "rdata"})
 	}
 	return wrr
+}
+
+func (q *Query) ToCLI() string {
+
+	qs := "<div id='digcli' class='digcli-box' hx-swap-oob='outerHTML'>\n"
+	qs += "<span id='cpcmd' onclick='copycmd(\"cpcmd\")'>"
+
+	qs += "dig "
+
+	if q.Nameserver != "" {
+		qs += "@" + q.Nameserver + " "
+	}
+
+	qs += q.Qname + " "
+	qs += q.Qtype + " "
+
+	if q.Port != "53" {
+		qs += "-p " + q.Port + " "
+	}
+
+	if q.IpVersion == "6" {
+		qs += "-6 "
+
+	}
+
+	if q.AA {
+		qs += "+aa "
+	}
+
+	if !q.AD {
+		qs += "+noad "
+	}
+
+	if !q.RD {
+		qs += "+nord "
+	}
+
+	if q.CD {
+		qs += "+cd "
+	}
+
+	if q.ShowQuery {
+		qs += "+qr "
+	}
+
+	if q.DO {
+		qs += "+dnssec "
+	}
+
+	if q.NoCrypto {
+		qs += "+nocrypto "
+	}
+
+	if q.Nsid {
+		qs += "+nsid "
+	}
+
+	// from 9.18 default UDP buffer size is 1232
+	// https://kb.isc.org/docs/behavior-dig-versions-edns-bufsize
+	if q.UDPsize != 1232 {
+		qs += "+bufsize=" + strconv.FormatUint(uint64(q.UDPsize), 10) + " "
+	}
+
+	if q.Transport == "tcp" {
+		qs += "+tcp "
+	}
+
+	if q.Tsig != "" {
+		qs += "-y " + q.Tsig + ""
+	}
+
+	qs += "</span>"
+	//qs += "<span class='copyicon' onclick='copycmd(\"cpcmd\")'><img src='copyicon.svg'></span>"
+	qs += "</div>\n"
+
+	return qs
 }
 
 func PackNSID(e *dns.EDNS0_NSID) ([]byte, error) {

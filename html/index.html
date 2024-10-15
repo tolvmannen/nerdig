@@ -2,8 +2,7 @@
 <html>
 <head>
         <title>NerDIG</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="script/style.css">
 	<!--
         <script src="https://unpkg.com/htmx.org@1.7.1/dist/htmx.min.js"></script>
@@ -11,6 +10,16 @@
 	-->
         <script src="script/1.9.9.htmx.min.js"></script>
         <script src="script/1.9.9.json-enc.js"></script>
+        <script>
+           function copycmd(id) {
+                var r = document.createRange();
+                r.selectNode(document.getElementById(id));
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(r);
+                document.execCommand('copy');
+                window.getSelection().removeAllRanges();
+            }
+        </script>
 
 </head>
 <body>
