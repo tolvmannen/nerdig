@@ -62,6 +62,7 @@ func (r *DigOut) ToHTML() string {
 
 	out += "<table>\n"
 	out += banner
+
 	if r.ShowQuery {
 		out += qheader
 		out += qopt
@@ -71,6 +72,14 @@ func (r *DigOut) ToHTML() string {
 		out += qadditional
 	}
 	out += header
+	if r.Response.Truncated {
+		out += "<tr>\n<td colspan='5' class='attention'>\n;; WARNING: Response truncated (TC). Retry query over TCP</td>\n</tr>\n"
+	}
+	if r.Query.RecursionDesired && !r.Response.RecursionAvailable {
+		out += "<tr>\n<td colspan='5'>\n;; WARNING: recursion requested but not available</td>\n</tr>\n"
+	}
+	// Manual fix for spacer here. Niceify later...
+	out += "<tr>\n<td colspan='5' class='spacer'></td></tr>\n"
 	out += opt
 	out += question
 	out += answer
@@ -159,7 +168,7 @@ func headerToHTML(msg *dns.Msg) string {
 	header += htmxwrap("ADDITIONAL: "+strconv.Itoa(len(msg.Extra)), "span", "ADDITIONALcount", []string{il})
 	header += "</td>\n"
 	header += "</tr>\n"
-	header += "<tr>\n<td colspan='5' class='spacer'></td></tr>\n"
+	//header += "<tr>\n<td colspan='5' class='spacer'></td></tr>\n"
 
 	return header
 }
