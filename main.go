@@ -4,12 +4,10 @@ import (
 	"crypto/tls"
 	"os"
 
-	//"encoding/hex"
 	"fmt"
 	"log"
 	"net/http"
 
-	//"strconv"
 	"strings"
 	"time"
 
@@ -17,7 +15,6 @@ import (
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/yaml.v3"
-	//"github.com/miekg/dns"
 )
 
 const (
@@ -72,16 +69,19 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	// Create Endpoint for testing
-	router.POST("/echo", func(c *gin.Context) {
-		var jsonInput map[string]interface{}
-		if err := c.ShouldBindJSON(&jsonInput); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(http.StatusOK, jsonInput)
-	})
 	/*
+		// Create Endpoint for testing
+		router.POST("/echo", func(c *gin.Context) {
+			var jsonInput map[string]interface{}
+			if err := c.ShouldBindJSON(&jsonInput); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			}
+			c.JSON(http.StatusOK, jsonInput)
+		})
+	*/
+	/*
+		// Endpoinr for json API version. To be developed...
 		router.POST("/dig/json", func(c *gin.Context) {
 			var query Query
 			if err := c.ShouldBindJSON(&query); err != nil {
@@ -99,14 +99,10 @@ func main() {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		//fmt.Printf("WQ: %#v\n", wq)
 
 		query := wq.Parse()
 
-		//fmt.Printf("Q: %#v\n", query)
 		out := dig(query)
-
-		//fmt.Printf("\n\n%+v\n\n", out)
 
 		outstr := out.ToHTML()
 

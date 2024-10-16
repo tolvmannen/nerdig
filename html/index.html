@@ -42,7 +42,6 @@
                 hx-ext="json-enc">
 
         <div class="options">
-
             <span>
                     <p class='note'>Name</p>
                     <input type="text" id="Qname" name="Qname" required>
@@ -84,66 +83,74 @@
 
         </div>
         <div class="options">
+            <details>
+                <!--<span class="infotag" hx-get="dig/info/dig-options" hx-target="#infobox" hx-swap="innerHTML">&#9432;</span> -->
+                <summary>
+                <span class="infotag" hx-get="dig/info/basic-dig-options" hx-target="#infobox" hx-swap="innerHTML">Basic Options:</span>
+                </summary>
+<!--
             <span class="infotag" hx-get="dig/info/dig-options" hx-target="#infobox" hx-swap="innerHTML"> 
                     Basic Options: 
-                    <!--<sup>&#9432;</sup>--> 
             </span>
+-->
+                <input type="checkbox" id="RD" value="true" name="RD" checked> 
+                <span>
+                <label class="sendflag" for="RD">RD</label>
+                </span>
 
-            <input type="checkbox" id="RD" value="true" name="RD" checked> 
-            <span>
-            <label class="sendflag" for="RD">RD</label>
-            </span>
+                <input type="checkbox" id="AA" value="true" name="AA"> 
+                <span>
+                <label class="sendflag" for="AA">AA</label>
+                </span>
 
-            <input type="checkbox" id="AA" value="true" name="AA"> 
-            <span>
-            <label class="sendflag" for="AA">AA</label>
-            </span>
+                <input type="checkbox" id="AD" value="true" name="AD" checked> 
+                <span>
+                <label class="sendflag" for="AD">AD</label>
+                </span>
 
-            <input type="checkbox" id="AD" value="true" name="AD"> 
-            <span>
-            <label class="sendflag" for="AD">AD</label>
-            </span>
+                <input type="checkbox" id="CD" value="true" name="CD"> 
+                <span>
+                <label class="sendflag" for="CD">CD</label>
+                </span>
+                
+                <input type="checkbox" id="DO" value="true" name="DO"> 
+                <span>
+                <label class="sendflag" for="DO">DO</label>
+                </span>
 
-            <input type="checkbox" id="CD" value="true" name="CD"> 
-            <span>
-            <label class="sendflag" for="CD">CD</label>
-            </span>
+                <input type="checkbox" id="NoCrypto" value="true" name="NoCrypto"> 
+                <span>
+                <label class="sendflag" for="NoCrypto">No Crypto</label>
+                </span>
+
+                <input type="checkbox" id="Nsid" value="true" name="Nsid"> 
+                <span>
+                <label class="sendflag" for="Nsid">Nsid</label>
+                </span>
+
+                <input type="checkbox" id="ShowQuery" value="true" name="ShowQuery"> 
+                <span>
+                <label class="sendflag" for="ShowQuery">Show Query</label>
+                </span>
+
+                <select id="Transport" name="Transport" required>
+                    <option value="udp">UDP</option>
+                    <option value="tcp">TCP</option>
+                </select>
+                <select id="IpVersion" name="IpVersion" required>
+                    <option value="4">IPv4</option>
+                    <option value="6">IPv6</option>
+                </select>
+                </span>
+            </details>
             
-            <input type="checkbox" id="DO" value="true" name="DO"> 
-            <span>
-            <label class="sendflag" for="DO">DO</label>
-            </span>
-
-            <input type="checkbox" id="NoCrypto" value="true" name="NoCrypto"> 
-            <span>
-            <label class="sendflag" for="NoCrypto">No Crypto</label>
-            </span>
-
-            <input type="checkbox" id="Nsid" value="true" name="Nsid"> 
-            <span>
-            <label class="sendflag" for="Nsid">Nsid</label>
-            </span>
-
-            <input type="checkbox" id="ShowQuery" value="true" name="ShowQuery"> 
-            <span>
-            <label class="sendflag" for="ShowQuery">Show Query</label>
-            </span>
-
-            <select id="Transport" name="Transport" required>
-                <option value="udp">UDP</option>
-                <option value="tcp">TCP</option>
-            </select>
-            <select id="IpVersion" name="IpVersion" required>
-                <option value="4">IPv4</option>
-                <option value="6">IPv6</option>
-            </select>
-            </span>
         </div>
 
         <div class="options">
             <details>
-                <summary>Extra Options</summary>
-
+                <summary>
+                <span class="infotag" hx-get="dig/info/extra-dig-options" hx-target="#infobox" hx-swap="innerHTML">Extra Options:</span>
+                </summary>
                 <span>
 <!--        
                     <p hx-get="dig/info/port" hx-target="#infobox" hx-swap="innerHTML">Port</p>
@@ -236,7 +243,7 @@
 
 </section>
 <section class="footer fullwidth"> 
-    
+
     <span>
     <label for="hide_unset"><img src="tt.png" width="50" height="50"/> </label>
     </span>

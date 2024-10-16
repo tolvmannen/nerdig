@@ -63,7 +63,14 @@ section {
 
 h1 {
 	font-size: 5rem;
+	margin: 1rem;
 }
+
+h2,
+h3 {
+	margin: 1rem;
+}
+
 .info {
 }
 .info:hover {
@@ -92,6 +99,7 @@ h1 {
 	display: flex;
 	align-items: center;
 	justify-content: center;	
+	padding: 1.5rem;
 	height: 5rem;
 	width: 100%;
 	color: var(--banner-text-color);
@@ -112,6 +120,12 @@ label {
 	/* top | right | bottom | left */
 	/*margin: 0.1rem 1rem 0 0;*/
 	color: var(--flag-unset-color);
+	font-size: 1.2rem;
+}
+
+select,
+input {
+	font-size: 1rem;
 }
 
 input[type=checkbox] {
@@ -161,8 +175,10 @@ input:focus{
 
 .options {
 	display: flex;
+	flex-wrap: wrap;
 	gap: 0.4rem;
 	padding: 0.2rem;
+	margin-bottom: 0.2rem;
 }
 
 details {
@@ -170,7 +186,7 @@ details {
 }
 
 .note {
-	font-size: 0.9rem;
+	font-size: 1rem;
 	color: var(--note-color);
 }
 
@@ -253,7 +269,7 @@ details {
 	align-items: start;
 	flex-grow: 1;
 	padding: 10px;
-	font-size: 0.8rem;
+	font-size: 0.9rem;
     	font-family: monospace, monospace;
     	color: var(--terminal-text-color);
     	background-color: var(--terminal-bg-color);

@@ -63,9 +63,6 @@ func dig(query Query) DigOut {
 	}
 	message.Extra = append(message.Extra, o)
 
-	// What are we sending...
-	//fmt.Printf("SENDING: %+v\n", message)
-
 	// Preserve name server name to use in output. Blank = system resolver
 	QNS := "System Resolver"
 	if len(query.Nameserver) > 1 {
@@ -103,12 +100,12 @@ func dig(query Query) DigOut {
 
 	digOut := DigOut{
 		Qname:      query.Qname,
-		Query:      message,
+		Query:      message, // Useful for the +qr option
 		Response:   response,
 		RTT:        rtt, // Note to self: rtt is in nanoseconds (1M ns = 1 millisecond)
 		Nameserver: nameserver,
 		QNSname:    QNS,
-		ShowQuery:  query.ShowQuery,
+		ShowQuery:  query.ShowQuery, // Useful for the +qr option
 		MsgSize:    msgSize,
 		Transport:  query.Transport,
 	}
@@ -121,7 +118,6 @@ func dig(query Query) DigOut {
 }
 
 // emulate the dig option +nocrypto
-
 func nocryptoMsg(in *dns.Msg) {
 	for i, answer := range in.Answer {
 		in.Answer[i] = nocryptoRR(answer)
