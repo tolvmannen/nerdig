@@ -11,21 +11,25 @@ import (
 )
 
 const (
-	il string = "info" // style selector to use with [class^="info-"] in css for styling info links
-	//hxget string = "https://ardeth.tolvmannen.se:5555/dig/info/"
+	il    string = "info" // style selector to use with [class^="info-"] in css for styling info links
 	hxget string = "dig/info/"
 )
 
 func (r *DigOut) ToHTML() string {
 
-	var out, banner, qheader, qopt, header, question, answer, authority, opt, additional, footer string
+	var out, banner, header, question, answer, authority, opt, additional, footer string
+	var qheader, qopt, qquestion, qanswer, qauthority, qadditional string
 
 	banner = "<tr>\n"
 	banner += "<td colspan='5'>; <<>> NerDiG 0.10 <<>></td>\n"
 	banner += "</tr>\n"
 
 	qheader += headerToHTML(r.Query)
+	qquestion = questonToHTML(r.Query)
+	qanswer = answerToHTML(r.Query)
+	qauthority = authorityToHTML(r.Query)
 	qopt += optToHTML(r.Query)
+	qadditional += additionalToHTML(r.Query)
 
 	header += headerToHTML(r.Response)
 	question = questonToHTML(r.Response)
@@ -61,6 +65,10 @@ func (r *DigOut) ToHTML() string {
 	if r.ShowQuery {
 		out += qheader
 		out += qopt
+		out += qquestion
+		out += qanswer
+		out += qauthority
+		out += qadditional
 	}
 	out += header
 	out += opt
@@ -70,12 +78,6 @@ func (r *DigOut) ToHTML() string {
 	out += additional
 	out += footer
 	out += "</table>\n"
-
-	/*
-		if loglv > 1 {
-			fmt.Printf("\n%s\n", out)
-		}
-	*/
 
 	return out
 }
