@@ -321,6 +321,15 @@ details {
 }
 
 
+.fade-in.htmx-added {
+  opacity: 0;
+}
+
+.fade-in {
+  opacity: 1;
+	transition: opacity 400ms ease-in;
+}
+
 
 @keyframes fade {
     from { opacity: 1.0; }

@@ -60,7 +60,7 @@ func (r *DigOut) ToHTML() string {
 	footer += "</td>\n"
 	footer += "</tr>\n"
 
-	out += "<table>\n"
+	out += "<table class='fade-in'>\n"
 	out += banner
 
 	if r.ShowQuery {
@@ -439,6 +439,11 @@ func rdatawrap(rr dns.RR, rtype string) string {
 
 	// Add info for rdata
 	switch rtype {
+	case "TXT":
+		for i := 1; i <= dns.NumField(rr); i++ {
+			rdata += "&quot;" + dns.Field(rr, i) + "&quot; "
+		}
+		wrr += htmxwrap(rdata, "td", "rdata-"+rtype, []string{il, "rdata"})
 	default:
 		for i := 1; i <= dns.NumField(rr); i++ {
 			rdata += dns.Field(rr, i) + " "

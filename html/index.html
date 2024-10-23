@@ -35,7 +35,7 @@
     <div class="digform">
                 <form hx-post="dig/webclient"
                 hx-target="#terminal" 
-                hx-swap="innerHTML" 
+                hx-swap="innerHTML swap:200ms" 
                 hx-headers='{"Content-Type": "application/json"}' 
                 hx-on:htmx:response-error="alert('ERROR: Request could not be completed')"
                 hx-on:htmx:send-error="alert('ERROR: Could not send request')"
