@@ -140,7 +140,8 @@ func main() {
 			Prompt: autocert.AcceptTOS,
 			//HostPolicy: autocert.HostWhitelist("examples.com", "example2.com"),
 			HostPolicy: autocert.HostWhitelist(strings.Join(hc.Hostnames, "\"")),
-			Cache:      autocert.DirCache("/var/www/.cache"),
+			//Cache:      autocert.DirCache("/var/www/.cache"),
+			Cache: autocert.DirCache(hc.Certpath),
 		}
 
 		log.Fatal(autotls.RunWithManager(router, &m))
