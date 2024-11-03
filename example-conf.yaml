@@ -1,7 +1,10 @@
 TLS: none           # auto | local | none
-LogLevel: 0
+LogLevel: 0         # 0 = no logging, 1 = error, 2 = info, 3+ = debug
 Address: ""         # empty string binds to all available ip-addresses.
 Port: "5555"
+Hosts: 
+    - ""            # Hostnames for certificate
+Certpath: ""        # Path to cert files are/should be stored
 Certfile: ""        # Only used with TLS: local 
 Keyfile: ""         # Only used with TLS: local
 AllowOrigins:       # "*" = allow all origins

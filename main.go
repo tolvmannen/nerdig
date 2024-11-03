@@ -13,7 +13,9 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
+	"github.com/gin-gonic/autotls"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/acme/autocert"
 	"gopkg.in/yaml.v3"
 )
 
@@ -29,6 +31,8 @@ type httpconf struct {
 	TLS              string   `yaml:"TLS" json:"TLS"`
 	Address          string   `yaml:"Address" json:"Address"`
 	Port             string   `yaml:"Port" json:"Port"`
+	Hostnames        []string `yaml:"Hostnames" json:"Hostnames"`
+	Certpath         string   `yaml:"Certpath" json:"Certpath"`
 	Certfile         string   `yaml:"Certfile" json:"Certfile"`
 	Keyfile          string   `yaml:"Keyfile" json:"Keyfile"`
 	AllowOrigins     []string `yaml:"AllowOrigins" json:"AllowOrigins"`
@@ -52,6 +56,10 @@ func main() {
 		fmt.Printf("YAML error: %v\n", err)
 	}
 
+	if hc.LogLevel > 1 {
+		fmt.Printf("Conf:%v\n", hc)
+
+	}
 	// Create a Gin router
 	router := gin.Default()
 
@@ -127,7 +135,15 @@ func main() {
 
 	switch hc.TLS {
 	case "auto":
-		fmt.Println("Auto TLS not yet implemented")
+		//fmt.Println("Auto TLS not yet implemented")
+		m := autocert.Manager{
+			Prompt: autocert.AcceptTOS,
+			//HostPolicy: autocert.HostWhitelist("examples.com", "example2.com"),
+			HostPolicy: autocert.HostWhitelist(strings.Join(hc.Hostnames, "\"")),
+			Cache:      autocert.DirCache("/var/www/.cache"),
+		}
+
+		log.Fatal(autotls.RunWithManager(router, &m))
 	case "local":
 		// Load Certificates
 		cer, err := tls.LoadX509KeyPair(hc.Certfile, hc.Keyfile)
