@@ -136,10 +136,15 @@ func main() {
 	switch hc.TLS {
 	case "auto":
 		//fmt.Println("Auto TLS not yet implemented")
+		hosts := strings.Join(hc.Hostnames, "\"")
+		if hc.LogLevel > 1 {
+			fmt.Printf("\nHostname Whitelist: %s\n", hosts)
+		}
+
 		m := autocert.Manager{
 			Prompt: autocert.AcceptTOS,
 			//HostPolicy: autocert.HostWhitelist("examples.com", "example2.com"),
-			HostPolicy: autocert.HostWhitelist(strings.Join(hc.Hostnames, "\"")),
+			HostPolicy: autocert.HostWhitelist(hosts),
 			//Cache:      autocert.DirCache("/var/www/.cache"),
 			Cache: autocert.DirCache(hc.Certpath),
 		}
