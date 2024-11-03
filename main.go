@@ -136,7 +136,7 @@ func main() {
 	switch hc.TLS {
 	case "auto":
 		//fmt.Println("Auto TLS not yet implemented")
-		hosts := strings.Join(hc.Hostnames, "\"")
+		hosts := strings.Join(hc.Hostnames, ",")
 		if hc.LogLevel > 1 {
 			fmt.Printf("\nHostname Whitelist: %s\n", hosts)
 		}
