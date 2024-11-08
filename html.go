@@ -464,6 +464,10 @@ func (q *Query) ToCLI() string {
 		qs += "@" + q.Nameserver + " "
 	}
 
+	if q.Reverse {
+		qs += "-x "
+	}
+
 	qs += q.Qname + " "
 	qs += q.Qtype + " "
 

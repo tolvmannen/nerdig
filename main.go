@@ -56,6 +56,8 @@ func main() {
 		fmt.Printf("YAML error: %v\n", err)
 	}
 
+	fmt.Printf("Conf:%v\n", hc)
+
 	if hc.LogLevel > 1 {
 		fmt.Printf("Conf:%v\n", hc)
 
@@ -112,9 +114,15 @@ func main() {
 
 		out := dig(query)
 
+		// update the #terminal div
 		outstr := out.ToHTML()
 
+		// update the info div
 		outstr += query.ToCLI()
+
+		if hc.LogLevel > 2 {
+			fmt.Printf("\n\n%s\n\n", outstr)
+		}
 
 		c.Data(http.StatusOK, ContentTypeHTML, []byte(outstr))
 	})

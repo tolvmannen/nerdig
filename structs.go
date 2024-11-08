@@ -27,6 +27,7 @@ type Query struct {
 	NoCrypto   bool   `json:"NoCrypto"`
 	Nsid       bool   `json:"Nsid"`
 	ShowQuery  bool   `json:"ShowQuery"`
+	Reverse    bool   `json:"Reverse"`
 	UDPsize    uint16 `json:"UDPsize"`
 	Tsig       string `json:"Tsig"`
 }
@@ -46,6 +47,7 @@ type WebQuery struct {
 	NoCrypto   string `json:"NoCrypto"`
 	Nsid       string `json:"Nsid"`
 	ShowQuery  string `json:"ShowQuery"`
+	Reverse    string `json:"Reverse"`
 	UDPsize    string `json:"UDPsize"`
 	Tsig       string `json:"Tsig"`
 }
@@ -65,6 +67,21 @@ type DigOut struct {
 // sanitize input data as precaution
 func (q *Query) Sanitize() {
 	q.Transport = strings.ToLower(q.Transport) // needs to be lower case.
+	// if reverse is set and query name is a valid IP address, convert
+	// qname to corresponding .arpa
+	if q.Reverse {
+		ip := net.ParseIP(q.Qname)
+
+		if ip != nil {
+			rev, err := dns.ReverseAddr(q.Qname)
+			if err != nil {
+				fmt.Printf("%v\n", err)
+			} else {
+				q.Qname = rev
+			}
+
+		}
+	}
 
 }
 
@@ -86,6 +103,7 @@ func (wq *WebQuery) Parse() Query {
 	q.NoCrypto = FixBool(wq.NoCrypto)
 	q.Nsid = FixBool(wq.Nsid)
 	q.ShowQuery = FixBool(wq.ShowQuery)
+	q.Reverse = FixBool(wq.Reverse)
 	udp, err := strconv.ParseUint(wq.UDPsize, 10, 32)
 	if err != nil {
 		q.UDPsize = 1232
