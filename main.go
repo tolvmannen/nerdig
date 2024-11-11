@@ -28,19 +28,19 @@ const (
 )
 
 type httpconf struct {
+	LogLevel         int      `yaml:"LogLevel" json:"LogLevel"`
 	TLS              string   `yaml:"TLS" json:"TLS"`
 	Address          string   `yaml:"Address" json:"Address"`
 	Port             string   `yaml:"Port" json:"Port"`
 	Hostnames        []string `yaml:"Hostnames" json:"Hostnames"`
-	Certpath         string   `yaml:"Certpath" json:"Certpath"`
-	Certfile         string   `yaml:"Certfile" json:"Certfile"`
-	Keyfile          string   `yaml:"Keyfile" json:"Keyfile"`
+	AutoTlsCertdir   string   `yaml:"AutoTlsCertdir" json:"AutoTlsCertdir"`
+	LocalCertfile    string   `yaml:"LocalCertfile" json:"LocalCertfile"`
+	LocalKeyfile     string   `yaml:"LocalKeyfile" json:"LocalKeyfile"`
 	AllowOrigins     []string `yaml:"AllowOrigins" json:"AllowOrigins"`
 	AllowMethods     []string `yaml:"AllowMethods" json:"AllowMethods"`
 	AllowHeaders     []string `yaml:"AllowHeaders" json:"AllowHeaders"`
 	ExposeHeaders    []string `yaml:"ExposeHeaders" json:"ExposeHeaders"`
 	AllowCredentials bool     `yaml:"AllowCredentials" json:"AllowCredentials"`
-	LogLevel         int      `yaml:"LogLevel" json:"LogLevel"`
 }
 
 func main() {
@@ -65,10 +65,9 @@ func main() {
 	// Create a Gin router
 	router := gin.Default()
 
-	//router.Static("/script", "./script")
 	router.Use(static.Serve("/", static.LocalFile("html", false)))
 
-	// Fix issues with browsers diallowing POSTing (No 'Access-Control-Allow-Origin' header is present on the requested resource)
+	// Fixes issues with browsers diallowing POSTing (No 'Access-Control-Allow-Origin' header is present on the requested resource)
 	router.Use(cors.New(cors.Config{
 		AllowAllOrigins:  false,
 		AllowOrigins:     hc.AllowOrigins,
@@ -143,24 +142,21 @@ func main() {
 
 	switch hc.TLS {
 	case "auto":
-		//fmt.Println("Auto TLS not yet implemented")
 		hosts := strings.Join(hc.Hostnames, ",")
 		if hc.LogLevel > 1 {
 			fmt.Printf("\nHostname Whitelist: %s\n", hosts)
 		}
 
 		m := autocert.Manager{
-			Prompt: autocert.AcceptTOS,
-			//HostPolicy: autocert.HostWhitelist("examples.com", "example2.com"),
+			Prompt:     autocert.AcceptTOS,
 			HostPolicy: autocert.HostWhitelist(hosts),
-			//Cache:      autocert.DirCache("/var/www/.cache"),
-			Cache: autocert.DirCache(hc.Certpath),
+			Cache:      autocert.DirCache(hc.AutoTlsCertdir),
 		}
 
 		log.Fatal(autotls.RunWithManager(router, &m))
 	case "local":
 		// Load Certificates
-		cer, err := tls.LoadX509KeyPair(hc.Certfile, hc.Keyfile)
+		cer, err := tls.LoadX509KeyPair(hc.LocalCertfile, hc.LocalKeyfile)
 		if err != nil {
 			log.Println(err)
 			return

@@ -60,6 +60,7 @@ func (r *DigOut) ToHTML() string {
 	footer += "</td>\n"
 	footer += "</tr>\n"
 
+	out += "<div class='wide-term-toggle'><label for='wide-term'>&hArr;</label></div>"
 	out += "<table class='fade-in'>\n"
 	out += banner
 

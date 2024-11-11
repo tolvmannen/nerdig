@@ -1,19 +1,18 @@
-TLS: none           # auto | local | none
-LogLevel: 0         # 0 = no logging, 1 = error, 2 = info, 3+ = debug
-Address: ""         # empty string binds to all available ip-addresses.
+TLS: none               # auto | local | none
+Address: ""             # IP address to bind API to. Empty string binds to all available ip-addresses.
 Port: "80"
 Hostsnames: 
-    - ""            # Hostnames for certificate. Public IP of client may need to be added as well
-Certpath: ""        # Path to cert files are/should be stored
-Certfile: ""        # Only used with TLS: local 
-Keyfile: ""         # Only used with TLS: local
-AllowOrigins:       # "*" = allow all origins
+    - ""                # Hostnames for certificate. Public IP of client may need to be added as well. Only used with TLS: auto
+AutoTlsCertdir: ""      # Full path to AutoTLS cert files are/should be cached. Only used with TLS: auto
+LocalCertfile: ""       # Full path to local certificate file. Only used with TLS: local
+LocalKeyfile: ""        # Full path to local key file. Only used with TLS: local
+AllowOrigins:           # "*" = allow all origins
     - "*"
 AllowMethods:
     - GET
     - POST
     - OPTIONS
-AllowHeaders:       # Example icludes headers nedded for the current HTMX usage
+AllowHeaders:           # Example icludes headers nedded for the current HTMX usage
     - Origin
     - hx-target
     - hx-current-url

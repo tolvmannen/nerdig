@@ -194,6 +194,7 @@ details {
 	margin-top: 1rem;
 	margin-bottom: 1rem;
 	flex-grow: 1;
+	position: relative;
 }
 
 .footer {
@@ -268,13 +269,14 @@ details {
 	flex-direction: row;
 	align-items: start;
 	flex-grow: 1;
-	padding: 10px;
+	padding: 1rem;
 	font-size: 0.9rem;
     	font-family: monospace, monospace;
     	color: var(--terminal-text-color);
     	background-color: var(--terminal-bg-color);
 	border-radius: 15px;
 	width: clamp(300px, 60%, 800px);
+	position: relative;
 }
 
 #terminal div p, 
@@ -302,6 +304,24 @@ details {
 	word-break: break-all;
 }
 
+.main:has(#wide-term:checked) {
+	flex-wrap: wrap;
+
+}
+.main:has(#wide-term:checked) > div {
+	width: 100%;
+}
+
+.wide-term-toggle {
+	position: absolute;
+	top: 0;
+	right: 1rem;
+	font-size: 2rem;
+}
+.wide-term-toggle:hover {
+	color: white;
+}
+
 @media (width < 1020px) {
 
 	section {
@@ -315,8 +335,6 @@ details {
 		width: 100%;
 	}
 
-	#terminal > div {
-	}
 
 }
 

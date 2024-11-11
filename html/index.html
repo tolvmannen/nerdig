@@ -86,15 +86,10 @@
         </div>
         <div class="options">
             <details>
-                <!--<span class="infotag" hx-get="dig/info/dig-options" hx-target="#infobox" hx-swap="innerHTML">&#9432;</span> -->
                 <summary>
                 <span class="infotag" hx-get="dig/info/basic-dig-options" hx-target="#infobox" hx-swap="innerHTML">Basic Options:</span>
                 </summary>
-<!--
-            <span class="infotag" hx-get="dig/info/dig-options" hx-target="#infobox" hx-swap="innerHTML"> 
-                    Basic Options: 
-            </span>
--->
+
                 <input type="checkbox" id="RD" value="true" name="RD" checked> 
                 <span>
                 <label class="sendflag" for="RD">RD</label>
@@ -159,46 +154,19 @@
                 <span class="infotag" hx-get="dig/info/extra-dig-options" hx-target="#infobox" hx-swap="innerHTML">Extra Options:</span>
                 </summary>
                 <span>
-<!--        
-                    <p hx-get="dig/info/port" hx-target="#infobox" hx-swap="innerHTML">Port</p>
--->
                     <span hx-get="dig/info/port" hx-target="#infobox" hx-swap="innerHTML">Port: </span>
                     <input size="4" type="text" id="Port" name="Port" value="53" required>
                 </span>
                 <span>
-<!--        
-                    <p hx-get="dig/info/UDPsize" hx-target="#infobox" hx-swap="innerHTML">UDP size</p>
--->
                     <span hx-get="dig/info/UDPsize" hx-target="#infobox" hx-swap="innerHTML">UDP size: </span>
                     <input size="4" type="text" id="UDPsize" name="UDPsize" value="1232" required>
                 </span>
                 <span>
-<!--        
-                    <p hx-get="dig/info/tsig" hx-target="#infobox" hx-swap="innerHTML">TSIG</p>
--->
                     <span class="infotag" hx-get="dig/info/tsig" hx-target="#infobox" hx-swap="innerHTML">TSIG: </span>
                     <input type="text" id="Tsig" name="Tsig" value="" placeholder="hmac-algorithm:name:key"></span>
                 </span>
             </details>
         </div>
-<!--        
-        <div class="options">
-
-                <span>
-                    <p hx-get="dig/info/port" hx-target="#infobox" hx-swap="innerHTML">Port</p>
-                    <input size="4" type="text" id="Port" name="Port" value="53" required>
-                </span>
-                <span>
-                    <p hx-get="dig/info/UDPsize" hx-target="#infobox" hx-swap="innerHTML">UDP size</p>
-                    <input size="4" type="text" id="UDPsize" name="UDPsize" value="1232" required>
-                </span>
-                <span>
-                    <p hx-get="dig/info/tsig" hx-target="#infobox" hx-swap="innerHTML">TSIG</p>
-                    <input type="text" id="Tsig" name="Tsig" value="" placeholder="hmac-algorithm:name:key">
-                </span>
-        </div>
--->
-
 
         </form>
     </div>
@@ -206,7 +174,10 @@
 <section class="main">
 
  
+        <input type="checkbox" id="wide-term" value="true" name="wide-term"> 
 	<div id="terminal">
+        <div class="wide-term-toggle"><label for="wide-term">&hArr;</label></div>
+
 
                 <div>
                 <h3>NAME</h3>
@@ -251,9 +222,8 @@
 </section>
 <section class="footer fullwidth"> 
 
-    <span>
-    <label for="hide_unset"><img src="tt.png" width="50" height="50"/> </label>
-    </span>
+    <span><label for="hide_unset"><img src="tt.png" width="50" height="50"/> </label></span>
+
 </section>
 
 </body>
