@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -14,6 +15,11 @@ const (
 	il    string = "info" // style selector to use with [class^="info-"] in css for styling info links
 	hxget string = "dig/info/"
 )
+
+var copyicon = LoadSVG("html/images/copyIcon.svg")
+var expandicon = LoadSVG("html/images/expandIcon.svg")
+
+//var collapseicon = LoadSVG("html/images/collapseIcon.svg")
 
 func (r *DigOut) ToHTML() string {
 
@@ -41,12 +47,12 @@ func (r *DigOut) ToHTML() string {
 	footer += "<tr>\n"
 	footer += "<td colspan='5'>\n"
 	// divide the Nanoseconds by 1e6 to get the Milliseconds as a int64
-	footer += ";; " + htmxwrap("Query time: "+strconv.Itoa(int(r.RTT)/1e6)+" ms", "span", "Qtime", []string{il})
+	footer += ";; " + hxwrap("Query time: "+strconv.Itoa(int(r.RTT)/1e6)+" ms", "span", "QUERYtime", []string{il})
 	footer += "</td>\n"
 	footer += "</tr>\n"
 	footer += "<tr>\n"
 	footer += "<td colspan='5'>\n"
-	footer += ";; " + htmxwrap("SERVER: "+r.Nameserver+"("+r.QNSname+") ("+r.Transport[:3]+")", "span", "Qserver", []string{il})
+	footer += ";; " + hxwrap("SERVER: "+r.Nameserver+"("+r.QNSname+") ("+r.Transport[:3]+")", "span", "QUERYserver", []string{il})
 	footer += "</td>\n"
 	footer += "</tr>\n"
 	footer += "<tr>\n"
@@ -56,11 +62,18 @@ func (r *DigOut) ToHTML() string {
 	footer += "</tr>\n"
 	footer += "<tr>\n"
 	footer += "<td colspan='5'>\n"
-	footer += ";; " + htmxwrap("MSG SIZE: "+strconv.Itoa(r.Response.Len()), "span", "MSGsize", []string{il})
+	footer += ";; " + hxwrap("MSG SIZE: "+strconv.Itoa(r.Response.Len()), "span", "MSGsize", []string{il})
 	footer += "</td>\n"
 	footer += "</tr>\n"
 
-	out += "<div class='wide-term-toggle'><label for='wide-term'>&hArr;</label></div>"
+	// add the expand icon
+	out += "<div class='iconBox'>\n"
+	//out += "<span onclick='copycmd(\"digresult\")'>" + copyicon + "</span>\n"
+	out += "<label for='wide-term'>\n"
+	out += "<span>" + expandicon + "</span>\n"
+	out += "</label>\n"
+	out += "</div>\n"
+	//out += "<div class='wide-term-toggle'><label for='wide-term'>&hArr;</label></div>"
 	out += "<table class='fade-in'>\n"
 	out += banner
 
@@ -143,30 +156,27 @@ func headerToHTML(msg *dns.Msg) string {
 
 	var header string
 
-	//header += "<tr>\n"
-	//header += "<td colspan='5'>; <<>> NerDiG 0.10 <<>></td>\n"
-	//header += "</tr>\n"
 	header += "<tr>\n"
 	header += "<td colspan='5'>;; " + direction + "</td>\n"
 	header += "</tr>\n"
 	header += "<tr>\n"
 	header += "<td colspan='5'>\n"
-	header += ";; ->>HEADER<<-" + htmxwrap(";; opcode: "+opcode+",", "span", "opcode", []string{opcode, il})
-	header += htmxwrap("status: "+rcode+",", "span", "rcode", []string{rcode, il})
-	header += htmxwrap("id: "+id, "span", "query-id", []string{il})
+	header += ";; ->>HEADER<<-" + hxwrap(";; opcode: "+opcode+",", "span", "opcode", []string{opcode, il})
+	header += hxwrap("status: "+rcode+",", "span", "rcode", []string{rcode, il})
+	header += hxwrap("id: "+id, "span", "query-id", []string{il})
 	header += "</td>\n"
 	header += "</tr>\n"
 	header += "<tr>\n"
 	header += "<td colspan='5'>\n"
-	header += htmxwrap(";; flags: ", "span", "flags", []string{"flags", il})
+	header += hxwrap(";; flags: ", "span", "flags", []string{"flags", il})
 	for _, flag := range flags {
-		header += htmxwrap(flag, "span", flag+"flag", []string{flag, il, setflag[flag]})
+		header += hxwrap(flag, "span", flag+"flag", []string{flag, il, setflag[flag]})
 	}
 	header += "<span class='sepcolon'>;</span>"
-	header += htmxwrap("QUERY: "+strconv.Itoa(len(msg.Question))+",", "span", "QUERYcount", []string{il})
-	header += htmxwrap("ANSWER: "+strconv.Itoa(len(msg.Answer))+",", "span", "ANSWERcount", []string{il})
-	header += htmxwrap("AUTHORITY: "+strconv.Itoa(len(msg.Ns))+",", "span", "AUTHORITYcount", []string{il})
-	header += htmxwrap("ADDITIONAL: "+strconv.Itoa(len(msg.Extra)), "span", "ADDITIONALcount", []string{il})
+	header += hxwrap("QUERY: "+strconv.Itoa(len(msg.Question))+",", "span", "QUERYcount", []string{il})
+	header += hxwrap("ANSWER: "+strconv.Itoa(len(msg.Answer))+",", "span", "ANSWERcount", []string{il})
+	header += hxwrap("AUTHORITY: "+strconv.Itoa(len(msg.Ns))+",", "span", "AUTHORITYcount", []string{il})
+	header += hxwrap("ADDITIONAL: "+strconv.Itoa(len(msg.Extra)), "span", "ADDITIONALcount", []string{il})
 	header += "</td>\n"
 	header += "</tr>\n"
 	//header += "<tr>\n<td colspan='5' class='spacer'></td></tr>\n"
@@ -184,12 +194,12 @@ func questonToHTML(msg *dns.Msg) string {
 
 	question += "<tr class='" + status + "'>\n"
 	question += "<td colspan='5'>\n"
-	question += htmxwrap(";; QUESTION SECTION:", "span", "QUsection", []string{il})
+	question += hxwrap(";; QUESTION SECTION:", "span", "QUERYsection", []string{il})
 	question += "</td>\n"
 	question += "</tr>\n"
 	question += "<td colspan='5'>\n"
 	for _, q := range msg.Question {
-		question += htmxwrap(strings.TrimSpace(q.String()), "span", "placeholder", []string{il})
+		question += hxwrap(strings.TrimSpace(q.String()), "span", "placeholder", []string{il})
 	}
 	question += "</td>\n"
 	question += "</tr>\n"
@@ -208,7 +218,7 @@ func answerToHTML(msg *dns.Msg) string {
 
 	answer += "<tr class='" + status + "'>\n"
 	answer += "<td colspan='5'>\n"
-	answer += htmxwrap(";; ANSWER SECTION:", "span", "ANS-section", []string{il})
+	answer += hxwrap(";; ANSWER SECTION:", "span", "ANSWERsection", []string{il})
 	answer += "</td>\n"
 	answer += "</tr>\n"
 
@@ -217,10 +227,10 @@ func answerToHTML(msg *dns.Msg) string {
 		head := *a.Header()
 
 		answer += "<tr>\n"
-		answer += htmxwrap(head.Name, "td", "owner-name", []string{il})
-		answer += htmxwrap(strconv.FormatUint(uint64(head.Ttl), 10), "td", "ttl", []string{il})
-		answer += htmxwrap(dns.ClassToString[head.Class], "td", "record-class", []string{il})
-		answer += htmxwrap(dns.Type(head.Rrtype).String(), "td", "record-type", []string{il})
+		answer += hxwrap(head.Name, "td", "owner-name", []string{il})
+		answer += hxwrap(strconv.FormatUint(uint64(head.Ttl), 10), "td", "ttl", []string{il})
+		answer += hxwrap(dns.ClassToString[head.Class], "td", "class", []string{il})
+		answer += hxwrap(dns.Type(head.Rrtype).String(), "td", dns.Type(head.Rrtype).String(), []string{il})
 
 		answer += rdatawrap(a, dns.Type(head.Rrtype).String())
 		answer += "</tr>\n"
@@ -232,7 +242,7 @@ func answerToHTML(msg *dns.Msg) string {
 				//out += "<div class=\"" + rfields[i-1] + "\">" + dns.Field(a, i) + "</div>\n"
 				//fmt.Printf("field %v - %#v ", i, dns.Field(a, i))
 			}
-			answer += htmxwrap(rdata, "td", "rdata-"+dns.Type(head.Rrtype).String(), []string{il, "rdata"})
+			answer += hxwrap(rdata, "td", "rdata-"+dns.Type(head.Rrtype).String(), []string{il, "rdata"})
 		*/
 	}
 	answer += "<tr>\n<td colspan='5' class='spacer'></td></tr>\n"
@@ -251,7 +261,7 @@ func authorityToHTML(msg *dns.Msg) string {
 
 	authority += "<tr class='" + status + "'>\n"
 	authority += "<td colspan='5'>\n"
-	authority += htmxwrap(";; AUTHORITY SECTION:", "span", "AUTH-section", []string{il})
+	authority += hxwrap(";; AUTHORITY SECTION:", "span", "AUTHORITYsection", []string{il})
 	authority += "</td>\n"
 	authority += "</tr>\n"
 	for _, a := range msg.Ns {
@@ -259,10 +269,10 @@ func authorityToHTML(msg *dns.Msg) string {
 		head := *a.Header()
 
 		authority += "<tr>\n"
-		authority += htmxwrap(head.Name, "td", "oname", []string{il})
-		authority += htmxwrap(strconv.FormatUint(uint64(head.Ttl), 10), "td", "ttl", []string{il})
-		authority += htmxwrap(dns.ClassToString[head.Class], "td", "rclass", []string{il})
-		authority += htmxwrap(dns.Type(head.Rrtype).String(), "td", "rtype", []string{il})
+		authority += hxwrap(head.Name, "td", "oname", []string{il})
+		authority += hxwrap(strconv.FormatUint(uint64(head.Ttl), 10), "td", "ttl", []string{il})
+		authority += hxwrap(dns.ClassToString[head.Class], "td", "rclass", []string{il})
+		authority += hxwrap(dns.Type(head.Rrtype).String(), "td", "rtype", []string{il})
 
 		authority += rdatawrap(a, dns.Type(head.Rrtype).String())
 		authority += "</tr>\n"
@@ -271,7 +281,7 @@ func authorityToHTML(msg *dns.Msg) string {
 			for i := 1; i <= dns.NumField(a); i++ {
 				rdata += dns.Field(a, i) + " "
 			}
-			authority += htmxwrap(rdata, "div", "rdata", []string{il})
+			authority += hxwrap(rdata, "div", "rdata", []string{il})
 		*/
 	}
 	authority += "<tr>\n<td colspan='5' class='spacer'></td></tr>\n"
@@ -289,7 +299,7 @@ func additionalToHTML(msg *dns.Msg) string {
 
 	additional += "<tr class='" + status + "'>\n"
 	additional += "<td colspan='5'>\n"
-	additional += htmxwrap(";; ADDITIONAL SECTION:", "span", "ADD-section", []string{il})
+	additional += hxwrap(";; ADDITIONAL SECTION:", "span", "ADDITIONALsection", []string{il})
 	additional += "</td>\n"
 	additional += "</tr>\n"
 
@@ -299,10 +309,10 @@ func additionalToHTML(msg *dns.Msg) string {
 		if dns.Type(head.Rrtype).String() != "OPT" {
 
 			additional += "<tr>\n"
-			additional += htmxwrap(head.Name, "td", "oname", []string{il})
-			additional += htmxwrap(strconv.FormatUint(uint64(head.Ttl), 10), "td", "ttl", []string{il})
-			additional += htmxwrap(dns.ClassToString[head.Class], "td", "rclass", []string{il})
-			additional += htmxwrap(dns.Type(head.Rrtype).String(), "td", "rtype", []string{il})
+			additional += hxwrap(head.Name, "td", "oname", []string{il})
+			additional += hxwrap(strconv.FormatUint(uint64(head.Ttl), 10), "td", "ttl", []string{il})
+			additional += hxwrap(dns.ClassToString[head.Class], "td", "rclass", []string{il})
+			additional += hxwrap(dns.Type(head.Rrtype).String(), "td", "rtype", []string{il})
 			additional += rdatawrap(e, dns.Type(head.Rrtype).String())
 			additional += "</tr>\n"
 
@@ -311,7 +321,7 @@ func additionalToHTML(msg *dns.Msg) string {
 				for i := 1; i <= dns.NumField(e); i++ {
 					rdata += dns.Field(e, i) + " "
 				}
-				additional += htmxwrap(rdata, "td", "rdata", []string{il, "rdata"})
+				additional += hxwrap(rdata, "td", "rdata", []string{il, "rdata"})
 			*/
 		}
 	}
@@ -330,7 +340,7 @@ func optToHTML(msg *dns.Msg) string {
 
 	opt += "<tr class='" + status + "'>\n"
 	opt += "<td colspan='5'>\n"
-	opt += htmxwrap(";; OPT PSEUDOSECTION:", "span", "OPT-section", []string{il})
+	opt += hxwrap(";; OPT PSEUDOSECTION:", "span", "OPT-section", []string{il})
 	opt += "</td>"
 	opt += "</tr>\n"
 
@@ -346,7 +356,7 @@ func optToHTML(msg *dns.Msg) string {
 			//
 			opt += "<tr>\n"
 			opt += "<td colspan='5'>\n"
-			opt += htmxwrap("; EDNS: version "+strconv.Itoa(int(f.Version()))+"; ", "span", "EDNSversion", []string{il})
+			opt += hxwrap("; EDNS: version "+strconv.Itoa(int(f.Version()))+"; ", "span", "EDNSversion", []string{il})
 
 			var fs string
 			if f.Do() {
@@ -354,14 +364,14 @@ func optToHTML(msg *dns.Msg) string {
 			} else {
 				fs = "flags:; "
 			}
-			opt += htmxwrap(fs, "span", "OPTdoflag", []string{il})
+			opt += hxwrap(fs, "span", "OPTdoflag", []string{il})
 
 			if f.Hdr.Ttl&0x7FFF != 0 {
 				ms := fmt.Sprintf("MBZ: 0x%04x, ", f.Hdr.Ttl&0x7FFF)
-				opt += htmxwrap(ms, "span", "MBZ", []string{il})
+				opt += hxwrap(ms, "span", "MBZ", []string{il})
 			}
 
-			opt += htmxwrap("udp: "+strconv.Itoa(int(f.UDPSize())), "span", "OPTudp", []string{il})
+			opt += hxwrap("udp: "+strconv.Itoa(int(f.UDPSize())), "span", "OPTudp", []string{il})
 			opt += "</td>\n"
 			opt += "</tr>\n"
 
@@ -408,7 +418,7 @@ func optToHTML(msg *dns.Msg) string {
 				case *dns.EDNS0_ESU:
 					s += "; ESU: " + o.String()
 				}
-				opt += htmxwrap(s, "span", "EDNSplaceholder", []string{il})
+				opt += hxwrap(s, "span", "EDNSplaceholder", []string{il})
 				opt += "</td>\n"
 				opt += "</tr>\n"
 			}
@@ -420,7 +430,7 @@ func optToHTML(msg *dns.Msg) string {
 	return opt
 }
 
-func htmxwrap(txt, tag, rfield string, cs []string) string {
+func hxwrap(txt, tag, rfield string, cs []string) string {
 	// Add classes to rr parts for styling and htmx links for info retrieval
 	class := strings.Join(cs, " ")
 	ws := "<" + tag + " class='" + class + "' "
@@ -444,12 +454,12 @@ func rdatawrap(rr dns.RR, rtype string) string {
 		for i := 1; i <= dns.NumField(rr); i++ {
 			rdata += "&quot;" + dns.Field(rr, i) + "&quot; "
 		}
-		wrr += htmxwrap(rdata, "td", "rdata-"+rtype, []string{il, "rdata"})
+		wrr += hxwrap(rdata, "td", "rdata-"+rtype, []string{il, "rdata"})
 	default:
 		for i := 1; i <= dns.NumField(rr); i++ {
 			rdata += dns.Field(rr, i) + " "
 		}
-		wrr += htmxwrap(rdata, "td", "rdata-"+rtype, []string{il, "rdata"})
+		wrr += hxwrap(rdata, "td", rtype, []string{il, "rdata"})
 	}
 	return wrr
 }
@@ -527,8 +537,11 @@ func (q *Query) ToCLI() string {
 		qs += "-y " + q.Tsig + ""
 	}
 
+	// Add the copy icon
+	//qs += LoadSVG("html/images/copyIcon.svg")
+	qs += "<div class='iconBox'>" + copyicon + "</span>\n"
+
 	qs += "</span>"
-	//qs += "<span class='copyicon' onclick='copycmd(\"cpcmd\")'><img src='copyicon.svg'></span>"
 	qs += "</div>\n"
 
 	return qs
@@ -540,4 +553,11 @@ func PackNSID(e *dns.EDNS0_NSID) ([]byte, error) {
 		return nil, err
 	}
 	return h, nil
+}
+
+func LoadSVG(file string) string {
+	img, err := os.ReadFile(file)
+	if err != nil {
+	}
+	return string(img)
 }

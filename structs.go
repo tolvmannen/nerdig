@@ -128,14 +128,6 @@ func FixBool(s string) bool {
 
 }
 
-/*
-func (wq *WebQuery) SendHeader() string {
-
-
-
-}
-*/
-
 func GetSystemResolver(ipver string) string {
 	conf, err := dns.ClientConfigFromFile("/etc/resolv.conf")
 	if err != nil {

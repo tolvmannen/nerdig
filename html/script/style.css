@@ -22,6 +22,8 @@
 
 	--hover-color: rgb(255, 255, 255, 1);
 
+	--footer-height: 50px;
+
 }
 
 *{
@@ -117,8 +119,6 @@ label {
 
 .sendflag { 
 	text-decoration: line-through;
-	/* top | right | bottom | left */
-	/*margin: 0.1rem 1rem 0 0;*/
 	color: var(--flag-unset-color);
 	font-size: 1.2rem;
 }
@@ -165,6 +165,7 @@ input:focus{
 	font-weight: bold;
 	font-size: 1.05rem;
 	border-radius: 15px;
+	border-width: 0;
 	width: 8rem;
 
 }
@@ -195,14 +196,34 @@ details {
 	margin-bottom: 1rem;
 	flex-grow: 1;
 	position: relative;
+	padding-bottom: calc(var(--footer-height) + 50px);
 }
 
 .footer {
-	height: 4rem;
+	padding: 1rem;
 	background-color: var(--primary-color);
 	flex-grow: 0;
+	justify-content: center;
+	-moz-box-pack: center;
+	position: fixed;
+	bottom: 0;
+	height: var(--footer-height);
+	box-shadow: 0 -3px 5px rgb(0 ,0, 0, .8);
 } 
 
+.classroomIcon {
+	fill: none;
+	stroke: white;
+	stroke-width: 2px;
+	height: 2rem;
+	width: 2rem;
+	margin-left: 5rem;
+}
+
+.classroomIcon:hover {
+	stroke: black;
+}
+	
 .infotag {
 	margin-right: 0.8rem; 
 	margin-bottom: 2px;
@@ -254,15 +275,30 @@ details {
 #cpcmd {
 	position: relative;
 	padding: 1rem;
+	padding-right: 2.2rem;
     	color: var(--terminal-text-color);
     	background-color: var(--terminal-bg-color);
 	border-radius: 15px;
-	cursor: copy;
+	cursor: pointer;
 }
 
 #cpcmd:hover {
 	color: var(--hover-color);
 }
+
+.copyIcon {
+	fill: none;
+	stroke: var(--secondary-color);
+	stroke-width: 2px;
+	height: 1.4rem;
+	width: 1.4rem;
+	cursor: pointer;
+}
+
+.copyIcon:hover {
+	stroke: white;
+}
+
 
 #terminal {
 	display: flex;
@@ -312,12 +348,38 @@ details {
 	width: 100%;
 }
 
-.wide-term-toggle {
+.iconBox {
 	position: absolute;
-	top: 0;
-	right: 1rem;
-	font-size: 2rem;
+	top: 0.8rem;
+	right: 0.8rem;
+	margin-left: 2rem;
 }
+
+.expandIcon {
+	height: 1.4rem;
+	width: 1.4rem;
+	stroke: #ccc;
+	stroke-width: 2px;
+	transform: rotate(90deg);
+}
+
+.expandIcon:hover {
+	stroke: #fff;
+}
+
+.main:has(#wide-term:checked) .expandIcon {
+	transform: rotate(-90deg);
+}
+
+.hidden {
+	overflow: hidden;
+	height: 0px;
+	width: 0px;
+
+}
+.off-screen {
+}
+
 .wide-term-toggle:hover {
 	color: white;
 }
@@ -335,6 +397,9 @@ details {
 		width: 100%;
 	}
 
+	.expandIcon {
+		display: none;
+	}
 
 }
 

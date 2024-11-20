@@ -1,4 +1,4 @@
-## Exrtra DIG Options
+## Extra DIG Options
 
 **Port** - 
 
