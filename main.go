@@ -56,8 +56,6 @@ func main() {
 		fmt.Printf("YAML error: %v\n", err)
 	}
 
-	fmt.Printf("Conf:%v\n", hc)
-
 	if hc.LogLevel > 1 {
 		fmt.Printf("Conf:%v\n", hc)
 

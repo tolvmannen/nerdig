@@ -27,7 +27,7 @@ func (r *DigOut) ToHTML() string {
 	var qheader, qopt, qquestion, qanswer, qauthority, qadditional string
 
 	banner = "<tr>\n"
-	banner += "<td colspan='5'>; <<>> NerDiG 0.10 <<>></td>\n"
+	banner += "<td colspan='5'>; <<>> NerDiG " + version + " <<>></td>\n"
 	banner += "</tr>\n"
 
 	qheader += headerToHTML(r.Query)
@@ -269,7 +269,7 @@ func authorityToHTML(msg *dns.Msg) string {
 		head := *a.Header()
 
 		authority += "<tr>\n"
-		authority += hxwrap(head.Name, "td", "oname", []string{il})
+		authority += hxwrap(head.Name, "td", "ownername", []string{il})
 		authority += hxwrap(strconv.FormatUint(uint64(head.Ttl), 10), "td", "ttl", []string{il})
 		authority += hxwrap(dns.ClassToString[head.Class], "td", "rclass", []string{il})
 		authority += hxwrap(dns.Type(head.Rrtype).String(), "td", "rtype", []string{il})
@@ -309,7 +309,7 @@ func additionalToHTML(msg *dns.Msg) string {
 		if dns.Type(head.Rrtype).String() != "OPT" {
 
 			additional += "<tr>\n"
-			additional += hxwrap(head.Name, "td", "oname", []string{il})
+			additional += hxwrap(head.Name, "td", "ownername", []string{il})
 			additional += hxwrap(strconv.FormatUint(uint64(head.Ttl), 10), "td", "ttl", []string{il})
 			additional += hxwrap(dns.ClassToString[head.Class], "td", "rclass", []string{il})
 			additional += hxwrap(dns.Type(head.Rrtype).String(), "td", "rtype", []string{il})

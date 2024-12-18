@@ -200,30 +200,66 @@ details {
 }
 
 .footer {
+	display: flex;
+	flex-direction: row;
+	padding-left: 10%;
+	padding-right: 10%;
 	padding: 1rem;
 	background-color: var(--primary-color);
 	flex-grow: 0;
-	justify-content: center;
-	-moz-box-pack: center;
+	justify-content: space-between;
+	-moz-box-pack: space-between;
 	position: fixed;
 	bottom: 0;
 	height: var(--footer-height);
 	box-shadow: 0 -3px 5px rgb(0 ,0, 0, .8);
 } 
 
+.footer > div:first-child {
+	margin-left: 3rem;
+}
+.footer > div:last-child {
+	margin-right: 3rem;
+}
+
+.classroom > div {
+	position: relative;
+	float: left;
+}
+
 .classroomIcon {
 	fill: none;
 	stroke: white;
 	stroke-width: 2px;
-	height: 2rem;
-	width: 2rem;
-	margin-left: 5rem;
+	height: 2.2rem;
+	width: 2.2rem;
+	margin-top: .3rem;
 }
 
 .classroomIcon:hover {
 	stroke: black;
 }
 	
+.classroomText {
+	padding-left: .2rem;
+	font-size: .9rem;
+	color: white; 
+	width: 22rem;
+}
+
+.githubIcon {
+	fill: white;
+	stroke: none;
+	stroke-width: 2px;
+	height: 2.2rem;
+	width: 2.2rem;
+	margin-top: .3rem;
+}
+
+.githubIcon:hover {
+	fill: black;
+}
+
 .infotag {
 	margin-right: 0.8rem; 
 	margin-bottom: 2px;
