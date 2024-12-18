@@ -202,8 +202,6 @@ details {
 .footer {
 	display: flex;
 	flex-direction: row;
-	padding-left: 10%;
-	padding-right: 10%;
 	padding: 1rem;
 	background-color: var(--primary-color);
 	flex-grow: 0;
@@ -217,9 +215,11 @@ details {
 
 .footer > div:first-child {
 	margin-left: 3rem;
+	margin-left: 5%;
 }
 .footer > div:last-child {
 	margin-right: 3rem;
+	margin-right: 5%;
 }
 
 .classroom > div {
@@ -229,7 +229,7 @@ details {
 
 .classroomIcon {
 	fill: none;
-	stroke: white;
+	stroke: black;
 	stroke-width: 2px;
 	height: 2.2rem;
 	width: 2.2rem;
@@ -237,11 +237,18 @@ details {
 }
 
 .classroomIcon:hover {
-	stroke: black;
+	stroke: white;
+}
+body:has(#hide_unset:checked) .classroomIcon {
+	stroke: white;
 }
 	
+body:has(#hide_unset:checked) .classroomIcon:hover {
+	stroke: black;
+}
+
 .classroomText {
-	padding-left: .2rem;
+	padding-left: .3rem;
 	font-size: .9rem;
 	color: white; 
 	width: 22rem;
@@ -259,6 +266,7 @@ details {
 .githubIcon:hover {
 	fill: black;
 }
+
 
 .infotag {
 	margin-right: 0.8rem; 
@@ -365,6 +373,7 @@ details {
 #terminal .spacer {
 	height: 1rem;
 }
+
 #terminal * td {
 	overflow-wrap: break-word;
 	vertical-align: top;
@@ -439,6 +448,20 @@ details {
 
 }
 
+@media (width < 520px) {
+	.classroomText {
+		font-size: .8rem;
+		width: 19rem;
+	}
+	/*
+	.footer > div:first-child {
+		margin-left: 2rem;
+	}
+	.footer > div:last-child {
+		margin-right: 2rem;
+	}
+	*/	
+}
 
 .fade-in.htmx-added {
   opacity: 0;
