@@ -230,9 +230,9 @@ func answerToHTML(msg *dns.Msg) string {
 		answer += hxwrap(head.Name, "td", "owner-name", []string{il})
 		answer += hxwrap(strconv.FormatUint(uint64(head.Ttl), 10), "td", "ttl", []string{il})
 		answer += hxwrap(dns.ClassToString[head.Class], "td", "class", []string{il})
-		answer += hxwrap(dns.Type(head.Rrtype).String(), "td", dns.Type(head.Rrtype).String(), []string{il})
+		answer += hxwrap(dns.Type(head.Rrtype).String(), "td", "RR-"+dns.Type(head.Rrtype).String(), []string{il})
 
-		answer += rdatawrap(a, dns.Type(head.Rrtype).String())
+		answer += rdatawrap(a, "RR-"+dns.Type(head.Rrtype).String())
 		answer += "</tr>\n"
 		/*
 			rdata := ""
