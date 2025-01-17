@@ -47,12 +47,12 @@ func (r *DigOut) ToHTML() string {
 	footer += "<tr>\n"
 	footer += "<td colspan='5'>\n"
 	// divide the Nanoseconds by 1e6 to get the Milliseconds as a int64
-	footer += ";; " + hxwrap("Query time: "+strconv.Itoa(int(r.RTT)/1e6)+" ms", "span", "QUERYtime", []string{il})
+	footer += ";; " + hxwrap("Query time: "+strconv.Itoa(int(r.RTT)/1e6)+" ms", "span", "QUERY-time", []string{il})
 	footer += "</td>\n"
 	footer += "</tr>\n"
 	footer += "<tr>\n"
 	footer += "<td colspan='5'>\n"
-	footer += ";; " + hxwrap("SERVER: "+r.Nameserver+"("+r.QNSname+") ("+r.Transport[:3]+")", "span", "QUERYserver", []string{il})
+	footer += ";; " + hxwrap("SERVER: "+r.Nameserver+"("+r.QNSname+") ("+r.Transport[:3]+")", "span", "QUERY-server", []string{il})
 	footer += "</td>\n"
 	footer += "</tr>\n"
 	footer += "<tr>\n"
@@ -62,7 +62,7 @@ func (r *DigOut) ToHTML() string {
 	footer += "</tr>\n"
 	footer += "<tr>\n"
 	footer += "<td colspan='5'>\n"
-	footer += ";; " + hxwrap("MSG SIZE: "+strconv.Itoa(r.Response.Len()), "span", "MSGsize", []string{il})
+	footer += ";; " + hxwrap("MSG SIZE: "+strconv.Itoa(r.Response.Len()), "span", "MSG-size", []string{il})
 	footer += "</td>\n"
 	footer += "</tr>\n"
 
@@ -163,20 +163,20 @@ func headerToHTML(msg *dns.Msg) string {
 	header += "<td colspan='5'>\n"
 	header += ";; ->>HEADER<<-" + hxwrap(";; opcode: "+opcode+",", "span", "opcode", []string{opcode, il})
 	header += hxwrap("status: "+rcode+",", "span", "rcode", []string{rcode, il})
-	header += hxwrap("id: "+id, "span", "query-id", []string{il})
+	header += hxwrap("id: "+id, "span", "QUERY-id", []string{il})
 	header += "</td>\n"
 	header += "</tr>\n"
 	header += "<tr>\n"
 	header += "<td colspan='5'>\n"
 	header += hxwrap(";; flags: ", "span", "flags", []string{"flags", il})
 	for _, flag := range flags {
-		header += hxwrap(flag, "span", flag+"flag", []string{flag, il, setflag[flag]})
+		header += hxwrap(flag, "span", flag+"-flag", []string{flag, il, setflag[flag]})
 	}
 	header += "<span class='sepcolon'>;</span>"
-	header += hxwrap("QUERY: "+strconv.Itoa(len(msg.Question))+",", "span", "QUERYcount", []string{il})
-	header += hxwrap("ANSWER: "+strconv.Itoa(len(msg.Answer))+",", "span", "ANSWERcount", []string{il})
-	header += hxwrap("AUTHORITY: "+strconv.Itoa(len(msg.Ns))+",", "span", "AUTHORITYcount", []string{il})
-	header += hxwrap("ADDITIONAL: "+strconv.Itoa(len(msg.Extra)), "span", "ADDITIONALcount", []string{il})
+	header += hxwrap("QUERY: "+strconv.Itoa(len(msg.Question))+",", "span", "QUERY-count", []string{il})
+	header += hxwrap("ANSWER: "+strconv.Itoa(len(msg.Answer))+",", "span", "ANSWER-count", []string{il})
+	header += hxwrap("AUTHORITY: "+strconv.Itoa(len(msg.Ns))+",", "span", "AUTHORITY-count", []string{il})
+	header += hxwrap("ADDITIONAL: "+strconv.Itoa(len(msg.Extra)), "span", "ADDITIONAL-count", []string{il})
 	header += "</td>\n"
 	header += "</tr>\n"
 	//header += "<tr>\n<td colspan='5' class='spacer'></td></tr>\n"
@@ -194,7 +194,7 @@ func questonToHTML(msg *dns.Msg) string {
 
 	question += "<tr class='" + status + "'>\n"
 	question += "<td colspan='5'>\n"
-	question += hxwrap(";; QUESTION SECTION:", "span", "QUERYsection", []string{il})
+	question += hxwrap(";; QUESTION SECTION:", "span", "QUERY-section", []string{il})
 	question += "</td>\n"
 	question += "</tr>\n"
 	question += "<td colspan='5'>\n"
@@ -218,7 +218,7 @@ func answerToHTML(msg *dns.Msg) string {
 
 	answer += "<tr class='" + status + "'>\n"
 	answer += "<td colspan='5'>\n"
-	answer += hxwrap(";; ANSWER SECTION:", "span", "ANSWERsection", []string{il})
+	answer += hxwrap(";; ANSWER SECTION:", "span", "ANSWER-section", []string{il})
 	answer += "</td>\n"
 	answer += "</tr>\n"
 
@@ -261,7 +261,7 @@ func authorityToHTML(msg *dns.Msg) string {
 
 	authority += "<tr class='" + status + "'>\n"
 	authority += "<td colspan='5'>\n"
-	authority += hxwrap(";; AUTHORITY SECTION:", "span", "AUTHORITYsection", []string{il})
+	authority += hxwrap(";; AUTHORITY SECTION:", "span", "AUTHORITY-section", []string{il})
 	authority += "</td>\n"
 	authority += "</tr>\n"
 	for _, a := range msg.Ns {
@@ -299,7 +299,7 @@ func additionalToHTML(msg *dns.Msg) string {
 
 	additional += "<tr class='" + status + "'>\n"
 	additional += "<td colspan='5'>\n"
-	additional += hxwrap(";; ADDITIONAL SECTION:", "span", "ADDITIONALsection", []string{il})
+	additional += hxwrap(";; ADDITIONAL SECTION:", "span", "ADDITIONAL-section", []string{il})
 	additional += "</td>\n"
 	additional += "</tr>\n"
 
@@ -357,7 +357,7 @@ func optToHTML(msg *dns.Msg) string {
 			//
 			opt += "<tr>\n"
 			opt += "<td colspan='5'>\n"
-			opt += hxwrap("; EDNS: version "+strconv.Itoa(int(f.Version()))+"; ", "span", "EDNSversion", []string{il})
+			opt += hxwrap("; EDNS: version "+strconv.Itoa(int(f.Version()))+"; ", "span", "OPT-EDNS", []string{il})
 
 			var fs string
 			if f.Do() {
@@ -365,14 +365,14 @@ func optToHTML(msg *dns.Msg) string {
 			} else {
 				fs = "flags:; "
 			}
-			opt += hxwrap(fs, "span", "OPTdoflag", []string{il})
+			opt += hxwrap(fs, "span", "OPT-doflag", []string{il})
 
 			if f.Hdr.Ttl&0x7FFF != 0 {
 				ms := fmt.Sprintf("MBZ: 0x%04x, ", f.Hdr.Ttl&0x7FFF)
 				opt += hxwrap(ms, "span", "MBZ", []string{il})
 			}
 
-			opt += hxwrap("udp: "+strconv.Itoa(int(f.UDPSize())), "span", "OPTudp", []string{il})
+			opt += hxwrap("udp: "+strconv.Itoa(int(f.UDPSize())), "span", "OPT-udp", []string{il})
 			opt += "</td>\n"
 			opt += "</tr>\n"
 
@@ -419,7 +419,7 @@ func optToHTML(msg *dns.Msg) string {
 				case *dns.EDNS0_ESU:
 					s += "; ESU: " + o.String()
 				}
-				opt += hxwrap(s, "span", "EDNSplaceholder", []string{il})
+				opt += hxwrap(s, "span", "EDNS-placeholder", []string{il})
 				opt += "</td>\n"
 				opt += "</tr>\n"
 			}
