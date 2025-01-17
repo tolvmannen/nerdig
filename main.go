@@ -130,7 +130,18 @@ func main() {
 		outstr := ""
 		mdfile, err := os.ReadFile("mdfiles/" + name + ".md")
 		if err != nil {
-			outstr = "<p>Could not open file: " + name + ".md (" + err.Error() + "</p>"
+			// Show the generic RR md file if specific RR md file does not exist.
+			if name[:3] == "RR-" {
+				mdfile, err := os.ReadFile("mdfiles/RR-404.md")
+				if err != nil {
+					outstr = "<p>Could not open file: " + name + ".md (" + err.Error() + "</p>"
+				} else {
+					outstr = string(mdToHTML(mdfile))
+				}
+
+			} else {
+				outstr = "<p>Could not open file: " + name + ".md (" + err.Error() + "</p>"
+			}
 		} else {
 			outstr = string(mdToHTML(mdfile))
 		}

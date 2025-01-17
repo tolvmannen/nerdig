@@ -269,10 +269,10 @@ func authorityToHTML(msg *dns.Msg) string {
 		head := *a.Header()
 
 		authority += "<tr>\n"
-		authority += hxwrap(head.Name, "td", "ownername", []string{il})
+		authority += hxwrap(head.Name, "td", "owner-name", []string{il})
 		authority += hxwrap(strconv.FormatUint(uint64(head.Ttl), 10), "td", "ttl", []string{il})
-		authority += hxwrap(dns.ClassToString[head.Class], "td", "rclass", []string{il})
-		authority += hxwrap(dns.Type(head.Rrtype).String(), "td", "rtype", []string{il})
+		authority += hxwrap(dns.ClassToString[head.Class], "td", "class", []string{il})
+		authority += hxwrap(dns.Type(head.Rrtype).String(), "td", "RR-"+dns.Type(head.Rrtype).String(), []string{il})
 
 		authority += rdatawrap(a, dns.Type(head.Rrtype).String())
 		authority += "</tr>\n"
@@ -309,10 +309,11 @@ func additionalToHTML(msg *dns.Msg) string {
 		if dns.Type(head.Rrtype).String() != "OPT" {
 
 			additional += "<tr>\n"
-			additional += hxwrap(head.Name, "td", "ownername", []string{il})
+			additional += hxwrap(head.Name, "td", "owner-name", []string{il})
 			additional += hxwrap(strconv.FormatUint(uint64(head.Ttl), 10), "td", "ttl", []string{il})
-			additional += hxwrap(dns.ClassToString[head.Class], "td", "rclass", []string{il})
-			additional += hxwrap(dns.Type(head.Rrtype).String(), "td", "rtype", []string{il})
+			additional += hxwrap(dns.ClassToString[head.Class], "td", "class", []string{il})
+			additional += hxwrap(dns.Type(head.Rrtype).String(), "td", "RR-"+dns.Type(head.Rrtype).String(), []string{il})
+
 			additional += rdatawrap(e, dns.Type(head.Rrtype).String())
 			additional += "</tr>\n"
 
