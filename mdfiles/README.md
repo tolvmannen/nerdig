@@ -25,3 +25,11 @@ For more details and options, see the [HTMX documentation](https://htmx.org/docs
 
 [RD]: https://www.wikipedia.se
 
+
+### NAMING CONVENTIONS
+
+#### Flags
+flag-<flag>.md
+
+RR-ownername.md
+
