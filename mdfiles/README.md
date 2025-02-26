@@ -31,5 +31,13 @@ For more details and options, see the [HTMX documentation](https://htmx.org/docs
 #### Flags
 flag-<flag>.md
 
+#### Resource Records
 RR-ownername.md
+RR-type.md
+RR-class.md
+RR-<rtype>.md
+
+#### Sections
+section-<section name>.md
+
 

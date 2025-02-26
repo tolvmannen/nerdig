@@ -47,12 +47,12 @@ func (r *DigOut) ToHTML() string {
 	footer += "<tr>\n"
 	footer += "<td colspan='5'>\n"
 	// divide the Nanoseconds by 1e6 to get the Milliseconds as a int64
-	footer += ";; " + hxwrap("Query time: "+strconv.Itoa(int(r.RTT)/1e6)+" ms", "span", "QUERY-time", []string{il})
+	footer += ";; " + hxwrap("Query time: "+strconv.Itoa(int(r.RTT)/1e6)+" ms", "span", "query-time", []string{il})
 	footer += "</td>\n"
 	footer += "</tr>\n"
 	footer += "<tr>\n"
 	footer += "<td colspan='5'>\n"
-	footer += ";; " + hxwrap("SERVER: "+r.Nameserver+"("+r.QNSname+") ("+r.Transport[:3]+")", "span", "QUERY-server", []string{il})
+	footer += ";; " + hxwrap("SERVER: "+r.Nameserver+"("+r.QNSname+") ("+r.Transport[:3]+")", "span", "query-server", []string{il})
 	footer += "</td>\n"
 	footer += "</tr>\n"
 	footer += "<tr>\n"
@@ -62,7 +62,7 @@ func (r *DigOut) ToHTML() string {
 	footer += "</tr>\n"
 	footer += "<tr>\n"
 	footer += "<td colspan='5'>\n"
-	footer += ";; " + hxwrap("MSG SIZE: "+strconv.Itoa(r.Response.Len()), "span", "MSG-size", []string{il})
+	footer += ";; " + hxwrap("MSG SIZE: "+strconv.Itoa(r.Response.Len()), "span", "msg-size", []string{il})
 	footer += "</td>\n"
 	footer += "</tr>\n"
 
@@ -163,20 +163,20 @@ func headerToHTML(msg *dns.Msg) string {
 	header += "<td colspan='5'>\n"
 	header += ";; ->>HEADER<<-" + hxwrap(";; opcode: "+opcode+",", "span", "opcode", []string{opcode, il})
 	header += hxwrap("status: "+rcode+",", "span", "rcode", []string{rcode, il})
-	header += hxwrap("id: "+id, "span", "QUERY-id", []string{il})
+	header += hxwrap("id: "+id, "span", "message-id", []string{il})
 	header += "</td>\n"
 	header += "</tr>\n"
 	header += "<tr>\n"
 	header += "<td colspan='5'>\n"
 	header += hxwrap(";; flags: ", "span", "flags", []string{"flags", il})
 	for _, flag := range flags {
-		header += hxwrap(flag, "span", flag+"-flag", []string{flag, il, setflag[flag]})
+		header += hxwrap(flag, "span", "flag-"+flag, []string{flag, il, setflag[flag]})
 	}
 	header += "<span class='sepcolon'>;</span>"
-	header += hxwrap("QUERY: "+strconv.Itoa(len(msg.Question))+",", "span", "QUERY-count", []string{il})
-	header += hxwrap("ANSWER: "+strconv.Itoa(len(msg.Answer))+",", "span", "ANSWER-count", []string{il})
-	header += hxwrap("AUTHORITY: "+strconv.Itoa(len(msg.Ns))+",", "span", "AUTHORITY-count", []string{il})
-	header += hxwrap("ADDITIONAL: "+strconv.Itoa(len(msg.Extra)), "span", "ADDITIONAL-count", []string{il})
+	header += hxwrap("QUERY: "+strconv.Itoa(len(msg.Question))+",", "span", "count-QUERY", []string{il})
+	header += hxwrap("ANSWER: "+strconv.Itoa(len(msg.Answer))+",", "span", "count-ANSWER", []string{il})
+	header += hxwrap("AUTHORITY: "+strconv.Itoa(len(msg.Ns))+",", "span", "count-AUTHORITY", []string{il})
+	header += hxwrap("ADDITIONAL: "+strconv.Itoa(len(msg.Extra)), "span", "count-ADDITIONAL", []string{il})
 	header += "</td>\n"
 	header += "</tr>\n"
 	//header += "<tr>\n<td colspan='5' class='spacer'></td></tr>\n"
@@ -194,7 +194,7 @@ func questonToHTML(msg *dns.Msg) string {
 
 	question += "<tr class='" + status + "'>\n"
 	question += "<td colspan='5'>\n"
-	question += hxwrap(";; QUESTION SECTION:", "span", "QUERY-section", []string{il})
+	question += hxwrap(";; QUESTION SECTION:", "span", "section-QUESTION", []string{il})
 	question += "</td>\n"
 	question += "</tr>\n"
 	question += "<td colspan='5'>\n"
@@ -227,9 +227,9 @@ func answerToHTML(msg *dns.Msg) string {
 		head := *a.Header()
 
 		answer += "<tr>\n"
-		answer += hxwrap(head.Name, "td", "owner-name", []string{il})
-		answer += hxwrap(strconv.FormatUint(uint64(head.Ttl), 10), "td", "ttl", []string{il})
-		answer += hxwrap(dns.ClassToString[head.Class], "td", "class", []string{il})
+		answer += hxwrap(head.Name, "td", "RR-owner-name", []string{il})
+		answer += hxwrap(strconv.FormatUint(uint64(head.Ttl), 10), "td", "RR-ttl", []string{il})
+		answer += hxwrap(dns.ClassToString[head.Class], "td", "RR-class", []string{il})
 		answer += hxwrap(dns.Type(head.Rrtype).String(), "td", "RR-"+dns.Type(head.Rrtype).String(), []string{il})
 
 		answer += rdatawrap(a, "RR-"+dns.Type(head.Rrtype).String())
