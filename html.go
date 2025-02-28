@@ -19,8 +19,6 @@ const (
 var copyicon = LoadSVG("html/images/copyIcon.svg")
 var expandicon = LoadSVG("html/images/expandIcon.svg")
 
-//var collapseicon = LoadSVG("html/images/collapseIcon.svg")
-
 func (r *DigOut) ToHTML() string {
 
 	var out, banner, header, question, answer, authority, opt, additional, footer string
@@ -43,37 +41,14 @@ func (r *DigOut) ToHTML() string {
 	authority = authorityToHTML(r.Response)
 	opt = optToHTML(r.Response)
 	additional = additionalToHTML(r.Response)
-
-	footer += "<tr>\n"
-	footer += "<td colspan='5'>\n"
-	// divide the Nanoseconds by 1e6 to get the Milliseconds as a int64
-	footer += ";; " + hxwrap("Query time: "+strconv.Itoa(int(r.RTT)/1e6)+" ms", "span", "query-time", []string{il})
-	footer += "</td>\n"
-	footer += "</tr>\n"
-	footer += "<tr>\n"
-	footer += "<td colspan='5'>\n"
-	footer += ";; " + hxwrap("SERVER: "+r.Nameserver+"("+r.QNSname+") ("+r.Transport[:3]+")", "span", "query-server", []string{il})
-	footer += "</td>\n"
-	footer += "</tr>\n"
-	footer += "<tr>\n"
-	footer += "<td colspan='5'>\n"
-	footer += ";; WHEN: " + time.Now().Format(time.UnixDate)
-	footer += "</td>\n"
-	footer += "</tr>\n"
-	footer += "<tr>\n"
-	footer += "<td colspan='5'>\n"
-	footer += ";; " + hxwrap("MSG SIZE: "+strconv.Itoa(r.Response.Len()), "span", "msg-size", []string{il})
-	footer += "</td>\n"
-	footer += "</tr>\n"
+	footer = footerToHTML(r)
 
 	// add the expand icon
 	out += "<div class='iconBox'>\n"
-	//out += "<span onclick='copycmd(\"digresult\")'>" + copyicon + "</span>\n"
 	out += "<label for='wide-term'>\n"
 	out += "<span>" + expandicon + "</span>\n"
 	out += "</label>\n"
 	out += "</div>\n"
-	//out += "<div class='wide-term-toggle'><label for='wide-term'>&hArr;</label></div>"
 	out += "<table class='fade-in'>\n"
 	out += banner
 
@@ -87,10 +62,17 @@ func (r *DigOut) ToHTML() string {
 	}
 	out += header
 	if r.Response.Truncated {
-		out += "<tr>\n<td colspan='5' class='attention'>\n;; WARNING: Response truncated (TC). Retry query over TCP</td>\n</tr>\n"
+		out += "<tr>\n<td colspan='5'>\n;; WARNING: Response truncated (TC). Retry query over TCP</td>\n</tr>\n"
 	}
 	if r.Query.RecursionDesired && !r.Response.RecursionAvailable {
 		out += "<tr>\n<td colspan='5'>\n;; WARNING: recursion requested but not available</td>\n</tr>\n"
+	}
+	var lf string
+	if len(r.Response.Answer) > 0 {
+		lf = dns.TypeToString[r.Response.Answer[len(r.Response.Answer)-1].Header().Rrtype]
+	}
+	if dns.TypeToString[r.Query.Question[0].Qtype][1:] == "XFR" && lf != "SOA" {
+		out += "<tr>\n<td colspan='5' class='attention'>\n;; WARNING: AXFR/IXFR not fully supported. Answer was truncated!</td>\n</tr>\n"
 	}
 	// Manual fix for spacer here. Niceify later...
 	out += "<tr>\n<td colspan='5' class='spacer'></td></tr>\n"
@@ -276,13 +258,6 @@ func authorityToHTML(msg *dns.Msg) string {
 
 		authority += rdatawrap(a, dns.Type(head.Rrtype).String())
 		authority += "</tr>\n"
-		/*
-			rdata := ""
-			for i := 1; i <= dns.NumField(a); i++ {
-				rdata += dns.Field(a, i) + " "
-			}
-			authority += hxwrap(rdata, "div", "rdata", []string{il})
-		*/
 	}
 	authority += "<tr>\n<td colspan='5' class='spacer'></td></tr>\n"
 
@@ -317,13 +292,6 @@ func additionalToHTML(msg *dns.Msg) string {
 			additional += rdatawrap(e, dns.Type(head.Rrtype).String())
 			additional += "</tr>\n"
 
-			/*
-				rdata := ""
-				for i := 1; i <= dns.NumField(e); i++ {
-					rdata += dns.Field(e, i) + " "
-				}
-				additional += hxwrap(rdata, "td", "rdata", []string{il, "rdata"})
-			*/
 		}
 	}
 	additional += "<tr>\n<td colspan='5' class='spacer'></td></tr>\n"
@@ -429,6 +397,33 @@ func optToHTML(msg *dns.Msg) string {
 	opt += "<tr>\n<td colspan='5' class='spacer'></td></tr>\n"
 
 	return opt
+}
+
+func footerToHTML(r *DigOut) string {
+	footer := "<tr>\n"
+	footer += "<td colspan='5'>\n"
+	// divide the Nanoseconds by 1e6 to get the Milliseconds as a int64
+	footer += ";; " + hxwrap("Query time: "+strconv.Itoa(int(r.RTT)/1e6)+" ms", "span", "query-time", []string{il})
+	footer += "</td>\n"
+	footer += "</tr>\n"
+	footer += "<tr>\n"
+	footer += "<td colspan='5'>\n"
+	footer += ";; " + hxwrap("SERVER: "+r.Nameserver+"("+r.QNSname+") ("+r.Transport[:3]+")", "span", "query-server", []string{il})
+	footer += "</td>\n"
+	footer += "</tr>\n"
+	footer += "<tr>\n"
+	footer += "<td colspan='5'>\n"
+	footer += ";; WHEN: " + time.Now().Format(time.UnixDate)
+	footer += "</td>\n"
+	footer += "</tr>\n"
+	footer += "<tr>\n"
+	footer += "<td colspan='5'>\n"
+	footer += ";; " + hxwrap("MSG SIZE: "+strconv.Itoa(r.Response.Len()), "span", "msg-size", []string{il})
+	footer += "</td>\n"
+	footer += "</tr>\n"
+
+	return footer
+
 }
 
 func hxwrap(txt, tag, rfield string, cs []string) string {
