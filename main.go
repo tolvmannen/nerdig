@@ -3,9 +3,11 @@ package main
 import (
 	"crypto/tls"
 	"os"
+	"os/user"
 
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 
 	"strings"
@@ -149,6 +151,12 @@ func main() {
 
 	})
 
+	currentUser, err := user.Current()
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+	fmt.Printf("running as %s\n", currentUser.Username)
+
 	switch hc.TLS {
 	case "auto":
 		hosts := strings.Join(hc.Hostnames, ",")
@@ -163,6 +171,7 @@ func main() {
 		}
 
 		log.Fatal(autotls.RunWithManager(router, &m))
+
 	case "local":
 		// Load Certificates
 		cer, err := tls.LoadX509KeyPair(hc.LocalCertfile, hc.LocalKeyfile)
@@ -179,16 +188,32 @@ func main() {
 			Handler:   router,
 		}
 
+		listener, err := tls.Listen("tcp", ":443", config)
+		if err != nil {
+			log.Fatalf("Failed to listen: %v", err)
+		}
+
+		log.Fatal(server.ServeTLS(listener, "", ""))
 		// Start the HTTPS server
-		log.Fatal(server.ListenAndServeTLS("", ""))
+		//log.Fatal(server.ListenAndServeTLS("", ""))
 	default:
 		server := &http.Server{
 			Addr:    hc.Address + ":" + hc.Port,
 			Handler: router,
 		}
-		log.Fatal(server.ListenAndServe())
+
+		// Bind port as root
+		listener, err := net.Listen("tcp", ":"+hc.Port)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		log.Fatal(server.Serve(listener))
+		//	log.Fatal(server.ListenAndServe())
 
 	}
+
 }
 
 // Notes
