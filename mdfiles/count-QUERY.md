@@ -1,3 +1,3 @@
 ## QUERY count
 
-Info
+The number of Resource Records in the QUERY section.

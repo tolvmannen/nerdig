@@ -209,9 +209,9 @@ func answerToHTML(msg *dns.Msg) string {
 		head := *a.Header()
 
 		answer += "<tr>\n"
-		answer += hxwrap(head.Name, "td", "RR-owner-name", []string{il})
-		answer += hxwrap(strconv.FormatUint(uint64(head.Ttl), 10), "td", "RR-ttl", []string{il})
-		answer += hxwrap(dns.ClassToString[head.Class], "td", "RR-class", []string{il})
+		answer += hxwrap(head.Name, "td", "Q-name", []string{il})
+		answer += hxwrap(strconv.FormatUint(uint64(head.Ttl), 10), "td", "Q-ttl", []string{il})
+		answer += hxwrap(dns.ClassToString[head.Class], "td", "Q-class", []string{il})
 		answer += hxwrap(dns.Type(head.Rrtype).String(), "td", "RR-"+dns.Type(head.Rrtype).String(), []string{il})
 
 		answer += rdatawrap(a, "RR-"+dns.Type(head.Rrtype).String())
@@ -333,7 +333,7 @@ func optToHTML(msg *dns.Msg) string {
 			} else {
 				fs = "flags:; "
 			}
-			opt += hxwrap(fs, "span", "OPT-doflag", []string{il})
+			opt += hxwrap(fs, "span", "flag-DO", []string{il})
 
 			if f.Hdr.Ttl&0x7FFF != 0 {
 				ms := fmt.Sprintf("MBZ: 0x%04x, ", f.Hdr.Ttl&0x7FFF)

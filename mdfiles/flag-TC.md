@@ -1,3 +1,9 @@
-## TC
+## TC: Truncated
 
-info about this flag.
+Query   | Response               
+:-------|:---------------------
+Ignored  | Message truncated
+<br/>
+
+Specifies that this message was truncated due to length greater than that
+permitted on the transmission channel.
