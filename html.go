@@ -200,7 +200,7 @@ func answerToHTML(msg *dns.Msg) string {
 
 	answer += "<tr class='" + status + "'>\n"
 	answer += "<td colspan='5'>\n"
-	answer += hxwrap(";; ANSWER SECTION:", "span", "ANSWER-section", []string{il})
+	answer += hxwrap(";; ANSWER SECTION:", "span", "section-ANSWER", []string{il})
 	answer += "</td>\n"
 	answer += "</tr>\n"
 
@@ -243,7 +243,7 @@ func authorityToHTML(msg *dns.Msg) string {
 
 	authority += "<tr class='" + status + "'>\n"
 	authority += "<td colspan='5'>\n"
-	authority += hxwrap(";; AUTHORITY SECTION:", "span", "AUTHORITY-section", []string{il})
+	authority += hxwrap(";; AUTHORITY SECTION:", "span", "section-AUTHORITY", []string{il})
 	authority += "</td>\n"
 	authority += "</tr>\n"
 	for _, a := range msg.Ns {
@@ -274,7 +274,7 @@ func additionalToHTML(msg *dns.Msg) string {
 
 	additional += "<tr class='" + status + "'>\n"
 	additional += "<td colspan='5'>\n"
-	additional += hxwrap(";; ADDITIONAL SECTION:", "span", "ADDITIONAL-section", []string{il})
+	additional += hxwrap(";; ADDITIONAL SECTION:", "span", "section-ADDITIONAL", []string{il})
 	additional += "</td>\n"
 	additional += "</tr>\n"
 
@@ -309,7 +309,7 @@ func optToHTML(msg *dns.Msg) string {
 
 	opt += "<tr class='" + status + "'>\n"
 	opt += "<td colspan='5'>\n"
-	opt += hxwrap(";; OPT PSEUDOSECTION:", "span", "OPT-section", []string{il})
+	opt += hxwrap(";; OPT PSEUDOSECTION:", "span", "section-OPT", []string{il})
 	opt += "</td>"
 	opt += "</tr>\n"
 
@@ -325,7 +325,7 @@ func optToHTML(msg *dns.Msg) string {
 			//
 			opt += "<tr>\n"
 			opt += "<td colspan='5'>\n"
-			opt += hxwrap("; EDNS: version "+strconv.Itoa(int(f.Version()))+"; ", "span", "OPT-EDNS", []string{il})
+			opt += hxwrap("; EDNS: version "+strconv.Itoa(int(f.Version()))+"; ", "span", "opt-EDNS0", []string{il})
 
 			var fs string
 			if f.Do() {
@@ -340,7 +340,7 @@ func optToHTML(msg *dns.Msg) string {
 				opt += hxwrap(ms, "span", "MBZ", []string{il})
 			}
 
-			opt += hxwrap("udp: "+strconv.Itoa(int(f.UDPSize())), "span", "OPT-udp", []string{il})
+			opt += hxwrap("udp: "+strconv.Itoa(int(f.UDPSize())), "span", "opt-UDP", []string{il})
 			opt += "</td>\n"
 			opt += "</tr>\n"
 
