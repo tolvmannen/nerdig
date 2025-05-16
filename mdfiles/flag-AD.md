@@ -1,8 +1,5 @@
 ## AD: Authenticated Data
-
-Query   | Response               
-:-------|:---------------------
-Validation requested  | Data validated
+---
 <br/>
 
 In a Query, setting the AD bit is a signal indicating that the client 
@@ -14,3 +11,9 @@ In a Response, the AD bit indicates that the response is DNSSEC signed *and*
 that the resolver has successfully validated the signatures. If a domain  
 is signed, but the validating resolver is unable to verify the signatures, 
 it will instead respond with status SERVFAIL and an empty answer section.  
+
+<br/>
+
+Query   | Response               
+:-------|:---------------------
+Validation requested  | Data validated
