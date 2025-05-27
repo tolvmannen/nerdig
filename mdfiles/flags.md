@@ -1,4 +1,5 @@
-### Flags header
+### Flags 
+---
 <br/>
 
 Flags are header subfields that are present in both queries and responses.

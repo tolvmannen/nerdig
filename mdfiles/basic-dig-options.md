@@ -1,24 +1,22 @@
 ## DIG Options
+---
+<br>
 
-Default options set as standard query.
+**RD** - Request recurive lookup.
 
-**RD** - Recursion Desired.
+**AD** - Request DNSSEC validation (default in validating resolvers).
 
-**AA** - Authoritative Answer. Ignored when set in Query.
+**CD** - Do NOT validate DNSSEC. 
 
-**AD** - Authenticated Data.
-
-**CD** - Checking disabled. 
-
-**DO** - Include DNSSEC records.
+**DO** - Include DNSSEC records in reply.
 
 **No Crypto** - Omit cryptographic hashes on DNSSEC records. 
 
-**Reverse** - Translate IP-address to reverse domain.
+**Reverse** - Translate IP-address to reverse domain. Use with query type *PTR*.
 
 **Nsid** - Set EDNS option to ask for NSID.
 
-**Show Query** - Show QUERY headers.
+**Show Query** - Show QUERY headers as well as ANSWER headers.
 
 **UDP/TCP** - Query over UDP/TCP.
 

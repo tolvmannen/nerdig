@@ -1,4 +1,6 @@
 ## RCODE - Response Code
+---
+<br/>
 
 This 4 bit field is set as part of responses.
 
