@@ -1,4 +1,4 @@
-package main
+package dig
 
 import (
 	"encoding/hex"
@@ -12,8 +12,9 @@ import (
 )
 
 const (
-	il    string = "info" // style selector to use with [class^="info-"] in css for styling info links
-	hxget string = "dig/info/"
+	il      string = "info" // style selector to use with [class^="info-"] in css for styling info links
+	hxget   string = "dig/info/"
+	version string = "0.9.0"
 )
 
 var copyicon = LoadSVG("html/images/copyIcon.svg")
@@ -348,11 +349,11 @@ func optToHTML(msg *dns.Msg) string {
 				var s string
 				opt += "<tr>\n"
 				opt += "<td colspan='5'>\n"
-				switch o.(type) {
+				switch t := o.(type) {
 				case *dns.EDNS0_NSID:
-					to := o.(*dns.EDNS0_NSID)
-					s += "\n; NSID: " + to.String()
-					h, e := PackNSID(to)
+					//to := o.(*dns.EDNS0_NSID)
+					s += "\n; NSID: " + t.String()
+					h, e := PackNSID(t)
 					var r string
 					if e == nil {
 						for _, c := range h {
