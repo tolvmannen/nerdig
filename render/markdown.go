@@ -1,4 +1,4 @@
-package main
+package render
 
 // based in https://github.com/gomarkdown/markdown/blob/master/examples/basic.go
 
@@ -15,7 +15,7 @@ import (
 // todo move to log level
 var printAst = false
 
-func mdToHTML(md []byte) []byte {
+func MdToHTML(md []byte) []byte {
 	// create markdown parser with extensions
 	extensions := parser.CommonExtensions | parser.AutoHeadingIDs | parser.NoEmptyLineBeforeBlock
 	p := parser.NewWithExtensions(extensions)

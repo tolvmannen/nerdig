@@ -1,4 +1,4 @@
-package main
+package dig
 
 import (
 	//"fmt"
@@ -10,7 +10,8 @@ import (
 	"github.com/miekg/dns"
 )
 
-func dig(query Query) DigOut {
+// func Dig(query Query) DigOut {
+func Dig(query Query) (DigOut, error) {
 
 	// Just to be safe, we sanitize data close to usage
 	query.Sanitize()
@@ -93,7 +94,15 @@ func dig(query Query) DigOut {
 	response, rtt, err := client.Exchange(message, nameserver)
 
 	if err != nil {
-		panic(err)
+		// Craft a placeholder responde here instead of panicking,
+		// just to avoid nil pointer reference.
+		response = &dns.Msg{
+			MsgHdr: dns.MsgHdr{
+				Opcode: dns.OpcodeQuery,
+				Rcode:  dns.RcodeServerFailure,
+			},
+			Question: make([]dns.Question, 1),
+		}
 	}
 
 	msgSize := response.Len()
@@ -114,7 +123,11 @@ func dig(query Query) DigOut {
 		nocryptoMsg(digOut.Response)
 	}
 
-	return digOut
+	return digOut, err
+}
+
+func QminDig(query Query) {
+
 }
 
 // emulate the dig option +nocrypto

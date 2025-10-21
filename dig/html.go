@@ -1,4 +1,4 @@
-package main
+package dig
 
 import (
 	"encoding/hex"
@@ -12,8 +12,9 @@ import (
 )
 
 const (
-	il    string = "info" // style selector to use with [class^="info-"] in css for styling info links
-	hxget string = "dig/info/"
+	il      string = "info" // style selector to use with [class^="info-"] in css for styling info links
+	hxget   string = "dig/info/"
+	version string = "0.9.0"
 )
 
 var copyicon = LoadSVG("html/images/copyIcon.svg")
@@ -348,11 +349,11 @@ func optToHTML(msg *dns.Msg) string {
 				var s string
 				opt += "<tr>\n"
 				opt += "<td colspan='5'>\n"
-				switch o.(type) {
+				switch t := o.(type) {
 				case *dns.EDNS0_NSID:
-					to := o.(*dns.EDNS0_NSID)
-					s += "\n; NSID: " + to.String()
-					h, e := PackNSID(to)
+					//to := o.(*dns.EDNS0_NSID)
+					s += "\n; NSID: " + t.String()
+					h, e := PackNSID(t)
 					var r string
 					if e == nil {
 						for _, c := range h {
@@ -360,34 +361,47 @@ func optToHTML(msg *dns.Msg) string {
 						}
 						s += "  " + r
 					}
+					opt += hxwrap(s, "span", "opt-EDNS0_NSID", []string{il})
 				case *dns.EDNS0_SUBNET:
 					s += "; SUBNET: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0_SUBNET", []string{il})
 				case *dns.EDNS0_COOKIE:
 					s += "; COOKIE: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0_COOKIE", []string{il})
 				case *dns.EDNS0_EXPIRE:
 					s += "; EXPIRE: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0_EXPIRE", []string{il})
 				case *dns.EDNS0_TCP_KEEPALIVE:
 					s += "; KEEPALIVE: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0_TCP_KEEPALIVE", []string{il})
 				case *dns.EDNS0_UL:
 					s += "; UPDATE LEASE: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0_UL", []string{il})
 				case *dns.EDNS0_LLQ:
 					s += "; LONG LIVED QUERIES: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0_LLQ", []string{il})
 				case *dns.EDNS0_DAU:
 					s += "; DNSSEC ALGORITHM UNDERSTOOD: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0_DAU", []string{il})
 				case *dns.EDNS0_DHU:
 					s += "; DS HASH UNDERSTOOD: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0_DHU", []string{il})
 				case *dns.EDNS0_N3U:
 					s += "; NSEC3 HASH UNDERSTOOD: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0_N3U", []string{il})
 				case *dns.EDNS0_LOCAL:
 					s += "; LOCAL OPT: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0_LOCAL_OPT", []string{il})
 				case *dns.EDNS0_PADDING:
 					s += "; PADDING: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0_PADDING", []string{il})
 				case *dns.EDNS0_EDE:
 					s += "; EDE: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0_EDE", []string{il})
 				case *dns.EDNS0_ESU:
 					s += "; ESU: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0-placeholder", []string{il})
 				}
-				opt += hxwrap(s, "span", "EDNS-placeholder", []string{il})
 				opt += "</td>\n"
 				opt += "</tr>\n"
 			}
