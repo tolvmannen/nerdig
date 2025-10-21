@@ -361,34 +361,47 @@ func optToHTML(msg *dns.Msg) string {
 						}
 						s += "  " + r
 					}
+					opt += hxwrap(s, "span", "opt-EDNS0_NSID", []string{il})
 				case *dns.EDNS0_SUBNET:
 					s += "; SUBNET: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0_SUBNET", []string{il})
 				case *dns.EDNS0_COOKIE:
 					s += "; COOKIE: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0_COOKIE", []string{il})
 				case *dns.EDNS0_EXPIRE:
 					s += "; EXPIRE: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0_EXPIRE", []string{il})
 				case *dns.EDNS0_TCP_KEEPALIVE:
 					s += "; KEEPALIVE: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0_TCP_KEEPALIVE", []string{il})
 				case *dns.EDNS0_UL:
 					s += "; UPDATE LEASE: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0_UL", []string{il})
 				case *dns.EDNS0_LLQ:
 					s += "; LONG LIVED QUERIES: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0_LLQ", []string{il})
 				case *dns.EDNS0_DAU:
 					s += "; DNSSEC ALGORITHM UNDERSTOOD: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0_DAU", []string{il})
 				case *dns.EDNS0_DHU:
 					s += "; DS HASH UNDERSTOOD: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0_DHU", []string{il})
 				case *dns.EDNS0_N3U:
 					s += "; NSEC3 HASH UNDERSTOOD: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0_N3U", []string{il})
 				case *dns.EDNS0_LOCAL:
 					s += "; LOCAL OPT: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0_LOCAL_OPT", []string{il})
 				case *dns.EDNS0_PADDING:
 					s += "; PADDING: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0_PADDING", []string{il})
 				case *dns.EDNS0_EDE:
 					s += "; EDE: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0_EDE", []string{il})
 				case *dns.EDNS0_ESU:
 					s += "; ESU: " + o.String()
+					opt += hxwrap(s, "span", "opt-EDNS0-placeholder", []string{il})
 				}
-				opt += hxwrap(s, "span", "EDNS-placeholder", []string{il})
 				opt += "</td>\n"
 				opt += "</tr>\n"
 			}
