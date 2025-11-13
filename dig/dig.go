@@ -2,6 +2,8 @@ package dig
 
 import (
 	//"fmt"
+	"context"
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -91,18 +93,19 @@ func Dig(query Query) (DigOut, error) {
 		}
 	}
 
-	response, rtt, err := client.Exchange(message, nameserver)
+	//response, rtt, err := client.Exchange(message, nameserver)
+	ctx := context.Background()
+	co, err := client.Dial(nameserver)
+	if err != nil {
+		fmt.Printf("ERR: %+v\n\n", err)
+		return failure(query, message, err.Error()), err
+	}
+
+	response, rtt, err := client.ExchangeWithConnContext(ctx, message, co)
 
 	if err != nil {
-		// Craft a placeholder responde here instead of panicking,
-		// just to avoid nil pointer reference.
-		response = &dns.Msg{
-			MsgHdr: dns.MsgHdr{
-				Opcode: dns.OpcodeQuery,
-				Rcode:  dns.RcodeServerFailure,
-			},
-			Question: make([]dns.Question, 1),
-		}
+		fmt.Printf("ERR: %+v\n\n", err)
+		return failure(query, message, err.Error()), err
 	}
 
 	msgSize := response.Len()
@@ -126,7 +129,47 @@ func Dig(query Query) (DigOut, error) {
 	return digOut, err
 }
 
-func QminDig(query Query) {
+// Craft a placeholder responde here instead of panicking,
+// to avoid nil pointer reference and stuff...
+func failure(q Query, m *dns.Msg, err string) DigOut {
+
+	response := &dns.Msg{
+		MsgHdr: dns.MsgHdr{
+			Opcode: dns.OpcodeQuery,
+			Rcode:  dns.RcodeServerFailure,
+		},
+		Question: make([]dns.Question, 1),
+	}
+
+	o := &dns.OPT{
+		Hdr: dns.RR_Header{
+			Name:   ".",
+			Rrtype: dns.TypeOPT,
+		},
+	}
+	e := &dns.EDNS0_EDE{
+		InfoCode:  dns.ExtendedErrorCodeOther,
+		ExtraText: err,
+	}
+	o.Option = append(o.Option, e)
+
+	response.Extra = append(response.Extra, o)
+
+	msgSize := response.Len()
+
+	ret := DigOut{
+		Qname:      q.Qname,
+		Query:      m, //
+		Response:   response,
+		RTT:        0, // Note to self: rtt is in nanoseconds (1M ns = 1 millisecond)
+		Nameserver: q.Nameserver,
+		QNSname:    q.Nameserver,
+		ShowQuery:  q.ShowQuery, // Useful for the +qr option
+		MsgSize:    msgSize,
+		Transport:  q.Transport,
+	}
+
+	return ret
 
 }
 
