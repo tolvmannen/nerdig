@@ -68,12 +68,20 @@ func (r *DigOut) ToHTML() string {
 	if r.Query.RecursionDesired && !r.Response.RecursionAvailable {
 		out += "<tr>\n<td colspan='5'>\n;; WARNING: recursion requested but not available</td>\n</tr>\n"
 	}
-	var lf string
-	if len(r.Response.Answer) > 0 {
-		lf = dns.TypeToString[r.Response.Answer[len(r.Response.Answer)-1].Header().Rrtype]
-	}
-	if dns.TypeToString[r.Query.Question[0].Qtype][1:] == "XFR" && lf != "SOA" {
-		out += "<tr>\n<td colspan='5' class='attention'>\n;; WARNING: AXFR/IXFR not fully supported. Answer was truncated!</td>\n</tr>\n"
+	// TODO check for nil reference in map
+	// if dns.TypeToString[r.Query.Question[0].Qtype][1:] == "XFR" {
+	if qt, ok := dns.TypeToString[r.Query.Question[0].Qtype]; ok {
+
+		if len(r.Response.Answer) > 0 {
+			// Is the last record a SOA?
+			if lastrec, ok := dns.TypeToString[r.Response.Answer[len(r.Response.Answer)-1].Header().Rrtype]; ok {
+				if lastrec == "SOA" && qt == "SOA" {
+					out += "<tr>\n<td colspan='5' class='attention'>\n;; WARNING: AXFR/IXFR not fully supported. Answer was truncated!</td>\n</tr>\n"
+				}
+			}
+			//closingsoa = dns.TypeToString[r.Response.Answer[len(r.Response.Answer)-1].Header().Rrtype]
+		}
+
 	}
 	// Manual fix for spacer here. Niceify later...
 	out += "<tr>\n<td colspan='5' class='spacer'></td></tr>\n"

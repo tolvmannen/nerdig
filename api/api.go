@@ -79,55 +79,6 @@ func Run() {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	/*
-		// Create Endpoint for testing
-		router.POST("/echo", func(c *gin.Context) {
-			var jsonInput map[string]interface{}
-			if err := c.ShouldBindJSON(&jsonInput); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-				return
-			}
-			c.JSON(http.StatusOK, jsonInput)
-		})
-	*/
-	/*
-		// Endpoinr for json API version. To be developed...
-		router.POST("/dig/json", func(c *gin.Context) {
-			var query Query
-			if err := c.ShouldBindJSON(&query); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-				return
-			}
-			out := dig(query)
-			c.JSON(http.StatusOK, out)
-		})
-
-	*/
-
-	router.POST("/dig/resviz", func(c *gin.Context) {
-		var wq dig.WebQuery
-		if err := c.ShouldBindJSON(&wq); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-
-		query := wq.Parse()
-
-		out, _ := dig.Dig(query)
-
-		// update the #terminal div
-		outstr := out.ToHTML()
-
-		// update the info div
-		outstr += query.ToCLI()
-
-		if hc.LogLevel > 2 {
-			fmt.Printf("\n\n%s\n\n", outstr)
-		}
-
-		c.Data(http.StatusOK, ContentTypeHTML, []byte(outstr))
-	})
-
 	router.POST("/dig/webclient", func(c *gin.Context) {
 		var wq dig.WebQuery
 		if err := c.ShouldBindJSON(&wq); err != nil {
