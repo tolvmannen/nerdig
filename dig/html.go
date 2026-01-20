@@ -152,14 +152,14 @@ func headerToHTML(msg *dns.Msg) string {
 	header += "</tr>\n"
 	header += "<tr>\n"
 	header += "<td colspan='5'>\n"
-	header += ";; ->>HEADER<<-" + hxwrap(";; opcode: "+opcode+",", "span", "opcode", []string{opcode, il})
-	header += hxwrap("status: "+rcode+",", "span", "rcode", []string{rcode, il})
-	header += hxwrap("id: "+id, "span", "message-id", []string{il})
+	header += ";; ->>HEADER<<-" + hxwrap(";; opcode: "+opcode+",", "span", "head-opcode", []string{opcode, il})
+	header += hxwrap("status: "+rcode+",", "span", "head-rcode", []string{rcode, il})
+	header += hxwrap("id: "+id, "span", "head-message-id", []string{il})
 	header += "</td>\n"
 	header += "</tr>\n"
 	header += "<tr>\n"
 	header += "<td colspan='5'>\n"
-	header += hxwrap(";; flags: ", "span", "flags", []string{"flags", il})
+	header += hxwrap(";; flags: ", "span", "head-flags", []string{"flags", il})
 	for _, flag := range flags {
 		header += hxwrap(flag, "span", "flag-"+flag, []string{flag, il, setflag[flag]})
 	}
@@ -425,12 +425,12 @@ func footerToHTML(r *DigOut) string {
 	footer := "<tr>\n"
 	footer += "<td colspan='5'>\n"
 	// divide the Nanoseconds by 1e6 to get the Milliseconds as a int64
-	footer += ";; " + hxwrap("Query time: "+strconv.Itoa(int(r.RTT)/1e6)+" ms", "span", "query-time", []string{il})
+	footer += ";; " + hxwrap("Query time: "+strconv.Itoa(int(r.RTT)/1e6)+" ms", "span", "foot-query-time", []string{il})
 	footer += "</td>\n"
 	footer += "</tr>\n"
 	footer += "<tr>\n"
 	footer += "<td colspan='5'>\n"
-	footer += ";; " + hxwrap("SERVER: "+r.Nameserver+"("+r.QNSname+") ("+r.Transport[:3]+")", "span", "query-server", []string{il})
+	footer += ";; " + hxwrap("SERVER: "+r.Nameserver+"("+r.QNSname+") ("+r.Transport[:3]+")", "span", "foot-query-server", []string{il})
 	footer += "</td>\n"
 	footer += "</tr>\n"
 	footer += "<tr>\n"
@@ -440,7 +440,7 @@ func footerToHTML(r *DigOut) string {
 	footer += "</tr>\n"
 	footer += "<tr>\n"
 	footer += "<td colspan='5'>\n"
-	footer += ";; " + hxwrap("MSG SIZE: "+strconv.Itoa(r.Response.Len()), "span", "msg-size", []string{il})
+	footer += ";; " + hxwrap("MSG SIZE: "+strconv.Itoa(r.Response.Len()), "span", "foot-msg-size", []string{il})
 	footer += "</td>\n"
 	footer += "</tr>\n"
 
