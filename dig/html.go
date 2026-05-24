@@ -96,6 +96,13 @@ func (r *DigOut) ToHTML() string {
 	return out
 }
 
+func sf(f bool) string {
+	if f {
+		return "set"
+	}
+	return "unset"
+}
+
 func headerToHTML(msg *dns.Msg) string {
 
 	opcode := dns.OpcodeToString[msg.Opcode]
@@ -103,44 +110,19 @@ func headerToHTML(msg *dns.Msg) string {
 	id := strconv.Itoa(int(msg.Id))
 
 	setflag := map[string]string{
-		"QR": "unset",
-		"RD": "unset",
-		"RA": "unset",
-		"AA": "unset",
-		"AD": "unset",
-		"CD": "unset",
-		"TC": "unset",
+		"QR": sf(msg.Response),
+		"RD": sf(msg.RecursionDesired),
+		"RA": sf(msg.RecursionAvailable),
+		"AA": sf(msg.Authoritative),
+		"AD": sf(msg.AuthenticatedData),
+		"CD": sf(msg.CheckingDisabled),
+		"TC": sf(msg.Truncated),
 	}
 
 	// Sending vs receiving
 	direction := "Sending:"
 	if msg.Response {
-		setflag["QR"] = "set"
 		direction = "Got answer:"
-	}
-
-	if msg.RecursionDesired {
-		setflag["RD"] = "set"
-	}
-
-	if msg.RecursionAvailable {
-		setflag["RA"] = "set"
-	}
-
-	if msg.Authoritative {
-		setflag["AA"] = "set"
-	}
-
-	if msg.AuthenticatedData {
-		setflag["AD"] = "set"
-	}
-
-	if msg.CheckingDisabled {
-		setflag["CD"] = "set"
-	}
-
-	if msg.Truncated {
-		setflag["TC"] = "set"
 	}
 
 	flags := []string{"QR", "RD", "RA", "AA", "AD", "CD", "TC"}
