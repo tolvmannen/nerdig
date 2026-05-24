@@ -191,6 +191,11 @@ details {
 	color: var(--note-color);
 }
 
+.unsetNote{
+	font-size: 1rem;
+	color: var(--unset-color)
+}
+
 .main {
 	margin-top: 1rem;
 	margin-bottom: 1rem;
